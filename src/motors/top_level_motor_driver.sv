@@ -5,8 +5,8 @@ module top_level_motor_driver #(
 ) (
     input wire clk_50,
     output [17:0] LEDR,
-    input wire [17:0]SW,
-    output wire UART_OUT
+    input wire [17:0]SW, 
+    output wire UART_OUT // GPIO5
 );
 
 wire ready;
