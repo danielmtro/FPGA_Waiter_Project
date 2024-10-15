@@ -5,7 +5,6 @@ module json_command_sender #(
     )(
     input clk,
     input rst,
-    input valid,
     output logic uart_out,
     output logic ready         // Signal indicating the system is ready for a new command
 );
@@ -35,35 +34,31 @@ module json_command_sender #(
         8'h22, 8'h52, 8'h22, 8'h3A, 8'h31, 8'h36, 8'h34, 8'h7D, 8'h0A  // "R":164}\n
     };
 
-    // Control logic to send the JSON string byte by byte
-    always_ff @(posedge clk) begin
-        if (rst) begin
-            byte_index <= 0;
-            uart_valid <= 0;
-            current_byte <= 8'b0;
-        end else if (uart_ready && byte_index < NUM_BYTES+1 && valid) begin
-            if (send_next_byte) begin
-                current_byte <= json_data[byte_index];  // Get the next byte to send
-                uart_valid <= 1;                        // Signal valid to send the byte
-                byte_index <= byte_index + 1;           // Increment the byte index
-            end else if (uart_ready) begin
-                uart_valid <= 0;
-            end
-        end
+    // current byte based on byte index
+    always_comb begin
+        current_byte = json_data[byte_index];
     end
 
-    // Generate send_next_byte signal for single cycle assertion of uart_valid
+    // Control logic to send the JSON string byte by byte
     always_ff @(posedge clk) begin
-        if (rst) begin
-            send_next_byte <= 0;
-        end else if (uart_ready && !uart_valid && !send_next_byte) begin
-            send_next_byte <= 1;    // Assert for one cycle when UART is ready and bytes remain
-        end else begin
-            send_next_byte <= 0;    // Deassert on next clock
+        if (rst)
+        begin
+            byte_index <= 0;
+            uart_valid <= 1'b1;
+        end 
+        else if (byte_index == NUM_BYTES - 1)
+        begin
+            byte_index <= byte_index;
+            uart_valid <= uart_ready ? 1'b0 : 1'b1; // set it invalid if we've stop sending data out
         end
+        else if (uart_ready)
+        begin
+            uart_valid <= 1'b1;
+            byte_index <= byte_index + 1;
+        end 
     end
 
     // Ready signal when all bytes have been sent, including the newline
-    assign ready = (byte_index == NUM_BYTES) && send_next_byte;  // Only ready after the last byte is fully sent
+    assign ready = (byte_index == NUM_BYTES - 1) && !uart_valid;  // Only ready after the last byte is fully sent
 
 endmodule
