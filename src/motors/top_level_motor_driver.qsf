@@ -1116,6 +1116,7 @@ set_global_assignment -name EDA_TEST_BENCH_NAME json_command_sender_tb -section_
 set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id json_command_sender_tb
 set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME json_command_sender_tb -section_id json_command_sender_tb
 set_global_assignment -name EDA_TEST_BENCH_FILE json_command_sender_tb.sv -section_id json_command_sender_tb
+set_global_assignment -name SYSTEMVERILOG_FILE lcd_inst_pkg.sv
 set_global_assignment -name SYSTEMVERILOG_FILE edge_detect.sv
 set_global_assignment -name SYSTEMVERILOG_FILE debounce.sv
 set_global_assignment -name SYSTEMVERILOG_FILE uart_tx_tb.sv

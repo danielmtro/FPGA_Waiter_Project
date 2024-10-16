@@ -4,14 +4,13 @@ module json_command_sender_tb;
 
     localparam CLKS_PER_BIT = 50_000_000/115_200;
     localparam BITS_N = 8;
-    localparam NUM_BYTES = 25;
+    localparam NUM_BYTES = 24;
 
     // Clock and reset signals
     logic clk;
     logic rst;
     logic uart_out;
     logic ready;
-    logic valid;
 
     // Instantiate the DUT (Device Under Test)
     json_command_sender #(
@@ -21,7 +20,6 @@ module json_command_sender_tb;
     uut (
         .clk(clk),
         .rst(rst),
-        .valid(valid),
         .uart_out(uart_out),
         .ready(ready)
     );
@@ -37,16 +35,23 @@ module json_command_sender_tb;
         rst = 1;
         #50;
         rst = 0;
-
-        #50;
-        valid = 1;
+		  
         // End of simulation
         wait(ready) begin
-            $display("Transmission complete.");
-            valid = 0;
-            $finish;
+				#500;
+				rst = 1;
+				#50;
+				rst = 0;
         end
+		  
+		  wait (ready) begin
+				#50;
+				$display("Transmission complete.");
+            $finish;
+		  end
     end
+	 
+	 
 
     // Monitor the UART output
     always @(posedge clk) begin

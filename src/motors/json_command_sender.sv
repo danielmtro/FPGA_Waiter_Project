@@ -1,7 +1,9 @@
+import lcd_inst_pkg::*;
+
 module json_command_sender #(
     parameter CLKS_PER_BIT = 50_000_000/115_200,
     parameter BITS_N = 8,
-    parameter NUM_BYTES = 25
+    parameter NUM_BYTES = 24
     )(
     input clk,
     input rst,
@@ -9,10 +11,12 @@ module json_command_sender #(
     output logic ready         // Signal indicating the system is ready for a new command
 );
     logic [4:0] byte_index = 0;
+    logic [4:0] next_byte_index = 0;
+
     logic uart_valid;
     logic [BITS_N-1:0] current_byte = 8'b0;
+
     logic uart_ready;
-    logic send_next_byte;  // New signal to indicate when to send the next byte
 
     // UART transmitter instance
     uart_tx #(
@@ -29,9 +33,30 @@ module json_command_sender #(
 
     // Hard-coded 25-byte JSON message: {"T":11,"L":164,"R":164}\n
     logic [0:NUM_BYTES-1][7:0] json_data = {
-        8'h7B, 8'h22, 8'h54, 8'h22, 8'h3A, 8'h31, 8'h31, 8'h2C, // {"T":11,
-        8'h22, 8'h4C, 8'h22, 8'h3A, 8'h31, 8'h36, 8'h34, 8'h2C, // "L":164,
-        8'h22, 8'h52, 8'h22, 8'h3A, 8'h31, 8'h36, 8'h34, 8'h7D, 8'h0A  // "R":164}\n
+        _OPEN_BRACE,
+        _DOUBLE_QUOTE,
+        _T,
+        _DOUBLE_QUOTE,
+        _COLON,
+        _1,
+        _COMMA,
+        _DOUBLE_QUOTE,
+        _L,
+        _DOUBLE_QUOTE,
+        _COLON,
+        _0,
+        _PERIOD,
+        _5,
+        _COMMA,
+         _DOUBLE_QUOTE,
+        _R,
+        _DOUBLE_QUOTE,
+        _COLON,
+        _0,
+        _PERIOD,
+        _5,
+        _CLOSE_BRACE,
+        8'h0A // new line character
     };
 
     // current byte based on byte index
@@ -44,21 +69,25 @@ module json_command_sender #(
         if (rst)
         begin
             byte_index <= 0;
+            next_byte_index <= 0;
             uart_valid <= 1'b1;
         end 
-        else if (byte_index == NUM_BYTES - 1)
-        begin
-            byte_index <= byte_index;
-            uart_valid <= uart_ready ? 1'b0 : 1'b1; // set it invalid if we've stop sending data out
-        end
+		  else if (next_byte_index == NUM_BYTES) 
+			  begin
+				uart_valid <= 1'b0;
+			  end
         else if (uart_ready)
         begin
-            uart_valid <= 1'b1;
-            byte_index <= byte_index + 1;
+            if(next_byte_index < NUM_BYTES)
+					begin
+						 byte_index <= next_byte_index;
+						 uart_valid <= 1'b1;
+						 next_byte_index <= next_byte_index + 1;
+					end
         end 
     end
 
     // Ready signal when all bytes have been sent, including the newline
-    assign ready = (byte_index == NUM_BYTES - 1) && !uart_valid;  // Only ready after the last byte is fully sent
+    assign ready = (next_byte_index == NUM_BYTES) && !uart_valid && uart_ready;  // Only ready after the last byte is fully sent
 
 endmodule
