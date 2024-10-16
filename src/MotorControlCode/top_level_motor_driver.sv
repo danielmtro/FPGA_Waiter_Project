@@ -46,29 +46,6 @@ module top_level_motor_driver (
 	logic [2:0] speed;
 	assign speed = SW[2:0];
 	
-	forward fward (
-		 .clk(CLOCK_50),
-		 .rst(edge_detect_keys[0]),
-		 .speed(speed),
-		 .uart_out(forward_uart_out),
-		 .ready()
-	);
-	
-	backwards back (
-		 .clk(CLOCK_50),
-		 .speed(speed),
-		 .rst(edge_detect_keys[1]),
-		 .uart_out(back_uart_out),
-		 .ready()
-	);
-	
-	stop stop_sequence (
-		.clk(CLOCK_50),
-		.rst(edge_detect_keys[2]),
-		.uart_out(stop_uart_out),
-		.ready()
-	);
-	
 	direction_fsm dfsm (
 		.clk(CLOCK_50),
 		.button_edge_0(edge_detect_keys[0]),
@@ -78,6 +55,40 @@ module top_level_motor_driver (
 	);
 	
 	
+	// create reset signals
+	logic f_rst, b_rst, s_rst;
+	
+	continous_motor_control cmc (
+		.clk(CLOCK_50),
+		.direction(direction),
+		.forward_rst(f_rst),
+		.reverse_rst(b_rst),
+		.stop_rst(s_rst)
+	);
+	
+	
+	forward fward (
+		 .clk(CLOCK_50),
+		 .rst(f_rst),
+		 .speed(speed),
+		 .uart_out(forward_uart_out),
+		 .ready()
+	);
+	
+	backwards back (
+		 .clk(CLOCK_50),
+		 .speed(speed),
+		 .rst(b_rst),
+		 .uart_out(back_uart_out),
+		 .ready()
+	);
+	
+	stop stop_sequence (
+		.clk(CLOCK_50),
+		.rst(s_rst),
+		.uart_out(stop_uart_out),
+		.ready()
+	);
 	
 	// always comb block to select what direction we want the robot to go
 	always_comb begin
