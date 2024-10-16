@@ -5,6 +5,13 @@ module top_level_motor_driver (
     input wire [3:0]KEY,
     inout wire [35:0]GPIO, // GPIO5
 
+	// 7seg outputs
+
+	output [6:0] HEX0,
+	output [6:0] HEX1,
+	output [6:0] HEX2,
+	output [6:0] HEX3,
+
 	// Microphone inputs and outputs
 	output	     I2C_SCLK,
 	inout		 I2C_SDAT,
@@ -92,6 +99,7 @@ module top_level_motor_driver (
 
 	// visualise pitch output
 	assign LEDR[9:0] = pitch_output.data;
+	display u_display (.clk(adc_clk),.value(pitch_output.data),.display0(HEX0),.display1(HEX1),.display2(HEX2),.display3(HEX3));
 	
 	//
 	//
