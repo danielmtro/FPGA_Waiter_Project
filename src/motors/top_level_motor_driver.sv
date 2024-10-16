@@ -32,16 +32,29 @@ wire reset_signal;
 	);
 
 
-	json_command_sender #(
-		 .CLKS_PER_BIT(CLKS_PER_BIT),
-		 .BITS_N(BITS_N),
-		 .NUM_BYTES(NUM_BYTES)
-	) json (
-		 .clk(CLOCK_50),
-		 .rst(SW[0]),
-		 .uart_out(uart_out),
-		 .ready(ready)
-	);
+	// json_command_sender #(
+	// 	 .CLKS_PER_BIT(CLKS_PER_BIT),
+	// 	 .BITS_N(BITS_N),
+	// 	 .NUM_BYTES(NUM_BYTES)
+	// ) json (
+	// 	 .clk(CLOCK_50),
+	// 	 .rst(SW[0]),
+	// 	 .uart_out(uart_out),
+	// 	 .ready(ready)
+	// );
+
+    logic uart_ready;
+    uart_tx #(
+        .CLKS_PER_BIT(CLKS_PER_BIT),
+        .BITS_N(BITS_N)
+    ) uart (
+        .clk(CLOCK_50),
+        .rst(SW[0]),
+        .data_tx(8'h7b),
+        .uart_out(uart_out),
+        .valid(1'b1),
+        .ready(uart_ready)
+    );
 	
 	assign GPIO[5] = uart_out;
 	assign LEDR[17] = SW[17];
