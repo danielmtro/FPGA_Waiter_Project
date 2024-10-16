@@ -63,25 +63,32 @@ module json_command_sender #(
     always_comb begin
         current_byte = json_data[byte_index];
     end
+	 
+	 
+	 logic uart_valid_q0;
+	 
+	 alwyas_ff @(posedge clk) begin
+		uart_valid <= uart_valid_q0;
+	 end
 
     // Control logic to send the JSON string byte by byte
     always_ff @(posedge clk) begin
         if (rst)
         begin
             byte_index <= 0;
-            next_byte_index <= 0;
-            uart_valid <= 1'b1;
+            next_byte_index <= 1;
+            uart_valid_q0 <= 1'b1;
         end 
 		  else if (next_byte_index == NUM_BYTES) 
 			  begin
-				uart_valid <= 1'b0;
+				uart_valid_q0 <= 1'b0;
 			  end
         else if (uart_ready)
         begin
             if(next_byte_index < NUM_BYTES)
 					begin
 						 byte_index <= next_byte_index;
-						 uart_valid <= 1'b1;
+						 uart_valid_q0 <= 1'b1;
 						 next_byte_index <= next_byte_index + 1;
 					end
         end 
