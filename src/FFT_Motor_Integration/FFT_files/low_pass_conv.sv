@@ -59,9 +59,8 @@ module low_pass_conv #(parameter W, W_FRAC) (
     logic overflow; // Optional (not marked): detect for overflow.
     logic x_valid_q = 1'b0; // Delay x.valid by 1 clock cycle
     always_ff @(posedge clk) begin : output_reg
+        y.valid <= 1'b0; /*FIX*/
         if (x.valid & x.ready) begin
-            //y.data <= FILL-IN; // Remember to truncate the fixed point properly!!!
-            //overflow <= FILL-IN; // (Optional) Check if our INTEGER truncation causes overflow (remember 2's complement!!!)
             y.data <= macc[$clog2(N) + 2*W - 1: W_FRAC]; // Take one less bit to truncate and then go to only the integer part
             overflow <= (macc < 0) ? 1 : 0;
 
