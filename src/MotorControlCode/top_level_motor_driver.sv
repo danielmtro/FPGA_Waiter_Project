@@ -27,10 +27,9 @@ wire reset_signal;
 		.button_edge(reset_signal)
 	);
 
-
 	json_command_sender json (
 		 .clk(CLOCK_50),
-		 .rst(SW[0]),
+		 .rst(reset_signal),
 		 .uart_out(uart_out),
 		 .ready(uart_ready)
 	);
