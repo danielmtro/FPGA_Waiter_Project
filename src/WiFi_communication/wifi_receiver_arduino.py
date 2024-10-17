@@ -3,7 +3,7 @@ import time
 from PIL import Image
 
 # IP address and port of the Arduino Nano 33 IoT
-SERVER_IP = '172.16.0.64'  # Replace with your Arduino's actual IP address
+SERVER_IP = '10.70.139.190'  # Replace with your Arduino's actual IP address
 PORT = 80
 
 def receive_image():
