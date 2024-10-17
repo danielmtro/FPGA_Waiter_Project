@@ -84,12 +84,11 @@ class mainWindow(QWidget):
         self.spiceLevel = 0
         self.image_flag = 0
         self.display_image_flag = 0
-        self.order_flag = 0
 
         # creating a timer object
         timer = QTimer(self)
-        timer.timeout.connect(self.check_interrupt)
-        timer.start(500)
+        timer.timeout.connect(self.updateDisplay)
+        timer.start(1000)
 
         # Set grid layout dimensions
 
@@ -120,17 +119,23 @@ class mainWindow(QWidget):
         # Menu Bar
         # Set the background color of the main window to dark grey
         # Set the faceWidget to have a transparent background
+        menuBar.setStyleSheet("background-color: #303030;") 
         menuBar.addWidget(self.orderButton, 0, 1, 1, 2, Qt.AlignHCenter)   
         graphicsArea.addWidget(self.faceWidget, 0, 0, 3, 4)
         graphicsArea.addWidget(self.spiceWidget, 0, 0, 3, 4)
         self.setLayout(mainWindow)
         
         # Set up Arduino Wifi connection
-        self.arduino_ip = 'http://<arduino_ip_address>'
-        self.url = f'{self.arduino_ip}/'
+        arduino_ip = 'http://<arduino_ip_address>'
+        url = f'{arduino_ip}/'
 
     def updateDisplay(self):
-        # Select image to display from 
+        # getting current time
+        current_time = QTime.currentTime()
+ 
+        # converting QTime object to string
+        label_time = current_time.toString('hh:mm:ss')
+
         if self.display_image_flag == 1:
             image = "images/chad_small.jpg"
         else:
@@ -154,13 +159,28 @@ class mainWindow(QWidget):
                 """QFrame {border-image: url("images/NoSpice.png") 0 0 0 0 fit fit;}""")
 
     def orderButtonClicked(self):
-        # Send order command to FPGA
-        self.sendData(0, 0, 1)
+
+        #self.sendData(0, 0, 1)
+
+        self.display_image_flag = 1
+        img =  cv2.imread("images\\chad_small.jpg") #loading image
+
+        prediction = classifier_deepface.classify_face(img)
+        prediction = prediction[0]
+
+        if (prediction['dominant_race'] == 'white'):
+            self.spiceLevel = 0
+        elif (prediction['dominant_race'] == 'black' or prediction['dominant_race'] == 'middle eastern' or prediction['dominant_race'] == 'latino hispanic'):
+            self.spiceLevel = 1
+        elif (prediction['dominant_race'] == 'asian' or prediction['dominant_race'] == 'indian'):
+            self.spiceLevel = 2
+
+        print(prediction)
 
     def imageReceived(self):
-        # Set image received flag high
+        """
         self.image_flag = 1
-        img =  cv2.imread("images\\chad_small.jpg") # Load image from agreed location
+        img =  cv2.imread("images\\chad_small.jpg") #loading image
 
         prediction = classifier_deepface.classify_face(img)
 
@@ -173,30 +193,33 @@ class mainWindow(QWidget):
 
         self.sendData(prediction['age'], prediction['dominant_emotion'], 0)     
         self.image_flag = 0   
+        """
 
     def check_interrupt(self):
         try:
             response = requests.get(self.arduino_ip)
             if response.status_code == 200:
                 message = response.text.strip()
-                # If image received for analysis
                 if "Analyse Image Sent" in message:
                     if self.image_flag == 0:
                         self.imageReceived()
-                # If image received for display
-                elif "Display Image Sent" in message:
-                    self.order_flag = 0 # Allow table to order again
+                if "Display Image Sent" in message:
                     self.updateDisplay()
+                #else:
+                #    self.label.setText("No Interrupt")
         except requests.exceptions.RequestException as e:
             print(f"Error: {e}")
 
     def sendData(self, age, emotion, order):
-        msg = [age, emotion, order]
+        """
+        msg = [age, emotion, orderFlag]
+
         # Send the message via a GET request
-        response = requests.get(self.url, params={'message': msg})
+        response = requests.get(url, params={'message': msg})
 
         # Print the response from the Arduino
         print(response.text)
+        """
 
 if __name__ == "__main__":
     import sys
