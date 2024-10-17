@@ -1,17 +1,13 @@
-
 module top_level_distance_sensor (
     input CLOCK_50,
     input enable,
     input reset,
-    inout [35:0] GPIO,
+    input echo,
+    output trigger,
     output [7:0] distance
 );
 
 logic start;
-logic echo, trigger;
-
-assign echo = GPIO[34];
-assign GPIO[35] = trigger;
 
 // Measure the distance every 250ms
 refresher250ms refresher_250ms (
