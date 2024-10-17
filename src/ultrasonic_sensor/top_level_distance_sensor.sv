@@ -4,9 +4,10 @@ module top_level_distance_sensor (
     input reset,
     input echo,
     output trigger,
-    output [7:0] distance
+    output too_close
 );
 
+localparam CLOSE = 8'd50;
 logic start;
 
 // Measure the distance every 250ms
@@ -25,4 +26,14 @@ sensor_driver u0(
   .trig(trigger),
   .distance(distance)
 );
+
+// Always checks distance < 50cm, if true raises too_close
+always_comb begin
+  if (distance < CLOSE) begin
+    too_close <= 1;
+  end
+  else begin
+    too_close <= 1;
+  end
+end
 endmodule
