@@ -7,6 +7,7 @@ module json_command_sender #(
     )(
     input clk,
     input rst,
+    input logic [3:0] speed,
     output logic uart_out,
     output logic ready         // Signal indicating the system is ready for a new command
 );
@@ -61,9 +62,25 @@ module json_command_sender #(
 		json_data[24] =8'h0A; // new line character
     end
 
+    // map the speed control correctly
+    logic [7:0] ascii_speed;
+    speed_control_mapping scm (
+        .speed(speed),
+        .ascii_speed(ascii_speed)
+    );
+
+    localparam speed_index_0 = 13;
+    localparam speed_index_1 = 21;
     // current byte based on byte index
     always_comb begin
+
         current_byte = json_data[byte_index];
+
+        // adjust the speed by the speed signal
+        if(byte_index == speed_index_0 || byte_index == speed_index_1) begin
+            current_byte = ascii_speed;
+        end
+
     end
 	 
     // Control logic to send the JSON string byte by byte

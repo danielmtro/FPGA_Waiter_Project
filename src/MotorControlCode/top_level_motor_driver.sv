@@ -13,7 +13,7 @@ module top_level_motor_driver (
 	// debounce key
 	genvar i;
 	generate
-		for(i = 0; i < 3; ++i) begin : debouncing_time
+		for(i = 0; i < 4; ++i) begin : debouncing_time
 			debounce #(.DELAY_COUNTS(2500)) d_0 (
 		   			  .clk(CLOCK_50),
 						  .button(KEY[i]),
@@ -26,7 +26,7 @@ module top_level_motor_driver (
 	
 	genvar j;
 	generate
-		for(j = 0; j < 3; ++j) begin : edge_time
+		for(j = 0; j < 4; ++j) begin : edge_time
 			edge_detect e0 (
 					.clk(CLOCK_50),
 					.button(~debounced_keys[j]),
@@ -43,16 +43,20 @@ module top_level_motor_driver (
 	logic [1:0]direction;
 	logic uart_out;
 		
+	logic [2:0] speed;
+	assign speed = SW[2:0];
 	
 	forward fward (
 		 .clk(CLOCK_50),
 		 .rst(edge_detect_keys[0]),
+		 .speed(speed),
 		 .uart_out(forward_uart_out),
 		 .ready()
 	);
 	
 	backwards back (
 		 .clk(CLOCK_50),
+		 .speed(speed),
 		 .rst(edge_detect_keys[1]),
 		 .uart_out(back_uart_out),
 		 .ready()
@@ -72,7 +76,8 @@ module top_level_motor_driver (
 		.button_edge_2(edge_detect_keys[2]),
 		.direction(direction)
 	);
-
+	
+	
 	
 	// always comb block to select what direction we want the robot to go
 	always_comb begin
@@ -91,6 +96,18 @@ module top_level_motor_driver (
 			end
 	end	
 	
+	
+	// basic testing
+	
+//	logic json_uart_out;
+//	json_command_sender jcs(
+//		.clk(CLOCK_50),
+//		.speed(speed),
+//		.rst(edge_detect_keys[3]),
+//		.uart_out(json_uart_out),
+//		.ready()
+//	);
+//	
 	assign GPIO[5] = uart_out;
 	
 	// view the current state
