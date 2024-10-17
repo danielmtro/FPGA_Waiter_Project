@@ -71,12 +71,12 @@ module json_command_sender #(
         if (rst)
         begin
             byte_index <= 0;
-            next_byte_index <= 1;
+            next_byte_index <= 0;
             uart_valid <= 1'b0;
         end 
 		else if (next_byte_index == NUM_BYTES) 
 			  begin
-				uart_valid <= 1'b0;
+				uart_valid <= 1'b0; //  we've reached the end so set valid low
 			  end
         else if (uart_ready)
         begin
@@ -90,6 +90,6 @@ module json_command_sender #(
     end
 
     // Ready signal when all bytes have been sent, including the newline
-    assign ready = (next_byte_index == NUM_BYTES) && uart_ready;  // Only ready after the last byte is fully sent
+    assign ready = (byte_index == NUM_BYTES) && uart_ready && (!uart_valid);  // Only ready after the last byte is fully sent
 
 endmodule

@@ -4,7 +4,6 @@ module json_command_sender_tb;
 
     localparam CLKS_PER_BIT = 50_000_000/115_200;
     localparam BITS_N = 8;
-    localparam NUM_BYTES = 24;
 
     // Clock and reset signals
     logic clk;
@@ -15,8 +14,7 @@ module json_command_sender_tb;
     // Instantiate the DUT (Device Under Test)
     json_command_sender #(
         .CLKS_PER_BIT(CLKS_PER_BIT),
-        .BITS_N(BITS_N),
-        .NUM_BYTES(NUM_BYTES))
+        .BITS_N(BITS_N))
     uut (
         .clk(clk),
         .rst(rst),
@@ -38,7 +36,7 @@ module json_command_sender_tb;
 		  
         // End of simulation
         wait(ready) begin
-				#500;
+				#1000;
 				rst = 1;
 				#50;
 				rst = 0;

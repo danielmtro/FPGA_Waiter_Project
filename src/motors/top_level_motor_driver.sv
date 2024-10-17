@@ -1,7 +1,4 @@
-module top_level_motor_driver #(
-    parameter CLKS_PER_BIT = 50_000_000/115_200,
-    parameter BITS_N = 8
-) (
+module top_level_motor_driver (
     input wire CLOCK_50,
     output [17:0] LEDR,
     input wire [17:0]SW,
@@ -31,10 +28,7 @@ wire reset_signal;
 	);
 
 
-	json_command_sender #(
-		 .CLKS_PER_BIT(CLKS_PER_BIT),
-		 .BITS_N(BITS_N)
-	) json (
+	json_command_sender json (
 		 .clk(CLOCK_50),
 		 .rst(SW[0]),
 		 .uart_out(uart_out),
