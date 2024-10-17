@@ -10,7 +10,7 @@
 //      input logic ready_in,
 		
 		output logic uart_out,
-      output logic ready_out      // Handshake protocol: ready_out (when this UART module is ready_out to send data).
+      output logic ready_out,      // Handshake protocol: ready_out (when this UART module is ready_out to send data).
 		output logic valid_out
  );
 
@@ -42,7 +42,7 @@
    end
    
    always_ff @( posedge clk ) begin : fsm_ff
-      if (rst) begin
+      if (~rst) begin
          current_state <= IDLE;
          data_tx_temp <= 0;
          bit_n <= 0;
@@ -64,6 +64,7 @@
    always_comb begin : fsm_output
          uart_out = 1'b1; // Default: The UART line is high.
          ready_out = 1'b0;    // Default: This UART module is only ready_out for new data when in the IDLE state.
+			valid_out = 0;
          case (current_state)
             IDLE:   begin
                ready_out = 1'b1;  // Handshake protocol: This UART module is ready_out for new data to send.
@@ -80,6 +81,7 @@
             PARITY_BIT: begin
 					valid_out = 1;
                if (PARITY_TYPE == 0) begin
+						uart_out = uart_out;
                end
                else if (PARITY_TYPE == 1) begin
                   uart_out = ~^data_tx_temp;
@@ -88,6 +90,7 @@
                   uart_out = ^data_tx_temp;
                end
                else begin
+						uart_out = uart_out;
                end
             end
          endcase
