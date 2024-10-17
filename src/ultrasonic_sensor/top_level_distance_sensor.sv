@@ -1,4 +1,6 @@
-module top_level_distance_sensor (
+module top_level_distance_sensor #(
+    parameter CLOSE = 8'd50
+) (
     input CLOCK_50,
     input enable,
     input reset,
@@ -7,7 +9,6 @@ module top_level_distance_sensor (
     output too_close
 );
 
-localparam CLOSE = 8'd50;
 logic start;
 
 // Measure the distance every 250ms
