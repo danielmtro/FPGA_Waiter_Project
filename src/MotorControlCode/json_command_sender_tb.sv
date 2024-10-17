@@ -13,9 +13,10 @@ module json_command_sender_tb;
 
     // Instantiate the DUT (Device Under Test)
     json_command_sender #(
-        .CLKS_PER_BIT(CLKS_PER_BIT),
-        .BITS_N(BITS_N))
-    uut (
+    .CLKS_PER_BIT(CLKS_PER_BIT),
+    .BITS_N(BITS_N),
+    .NUM_BYTES(25)
+    ) uut (
         .clk(clk),
         .rst(rst),
         .uart_out(uart_out),
