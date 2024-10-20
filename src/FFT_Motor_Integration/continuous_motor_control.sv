@@ -9,7 +9,7 @@ It will pulse reset for the activated controller
 module continous_motor_control
 (
     input clk,
-    input [1:0] direction, // should be a 2 bit state
+    input [2:0] direction, // should be a 3 bit state
     output forward_rst,
     output reverse_rst,
     output stop_rst
@@ -33,13 +33,19 @@ module continous_motor_control
         stop_rst = 0;
 
         case (direction) 
-            2'b00 : begin 
+            3'b001 : begin 
                 forward_rst = (i%clks_per_100ms == 0) ? 1 : 0;
             end
-            2'b01 : begin
+            3'b011 : begin
                 reverse_rst = (i%clks_per_100ms == 0) ? 1 : 0;
             end
-            2'b10 : begin
+				3'b010 : begin
+					 stop_rst = (i%clks_per_100ms == 0) ? 1 : 0;
+				end
+				3'b000 : begin
+					stop_rst = (i%clks_per_100ms == 0) ? 1 : 0;
+				end
+            default : begin
                 stop_rst = (i%clks_per_100ms == 0) ? 1 : 0;
             end
         endcase

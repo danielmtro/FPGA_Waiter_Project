@@ -1,34 +1,66 @@
-module direction_fsm(
+module direction_fsm #(
+    parameter FREQUENCY = 13
+)(
     input           		  clk,
-    input           		  button_edge_0, // controls sending the robot forwards
-    input                 button_edge_1, // controls sending the robot backwards
-	 input				     button_edge_2, // controls stopping the robot
-    output                    [1:0] direction
+	 input logic [9:0] frequency_input, // frequency input
+    input logic too_close, // ultrasonic input
+	 input logic [4:0] threshold_frequency,
+    output [2:0] direction
 );
+
+	 // add a frequency delay to terms
 
     // State teypedef enum used here
 	 // Note that we specify the exact encoding that we want to use for each state
-    typedef enum logic [1:0] {
-        FORWARDS = 2'b00,
-        BACKWARDS = 2'b01,
-		  STOP = 2'b10
+    typedef enum logic [2:0] {
+        IDLE_BASE = 3'b000,
+        FORWARDS = 3'b001,
+        IDLE_TABLE = 3'b010,
+        BACKWARDS = 3'b011,
+        STOP = 3'b100
     } state_type;
 
-    state_type current_state = STOP, next_state;
+    // create a two second delay that can be used to prevent the robot 
+    // from  instantly changing directions
+    integer i = 0;
+    localparam TIME_FOR_2s = 100000000;
+    always_ff @(posedge clk) begin
+        if(current_state != FORWARDS && current_state != BACKWARDS) begin
+            i <= 0;
+        end
+        else if (i < TIME_FOR_2s) begin 
+            i <= i + 1;
+        end
+    end
+
+    state_type current_state = IDLE_BASE, next_state;
 
     // always_comb block for next state logic
     always_comb begin
         next_state = current_state;
 			
-		  if(button_edge_2) begin
-				next_state = STOP;
-		  end
-        else if(button_edge_0) begin
-            next_state = FORWARDS;
-        end
-        else if(button_edge_1) begin
-            next_state = BACKWARDS;
-        end
+		  case(current_state)
+            IDLE_BASE : begin
+                if(frequency_input > threshold_frequency) begin
+                    next_state = FORWARDS;
+                end
+            end
+            IDLE_TABLE : begin
+                if(frequency_input > threshold_frequency) begin
+                    next_state = BACKWARDS;
+                end
+            end
+            FORWARDS : begin
+                if(too_close && i >= TIME_FOR_2s) begin // corresponds to two seconds at 50MHz
+                    next_state = IDLE_TABLE;
+                end
+            end
+            BACKWARDS : begin
+                if(too_close && i >= TIME_FOR_2s) begin
+                    next_state = IDLE_BASE;
+                end
+            end
+		  endcase
     end
 
     // always_ff for FSM state variable flip_flops

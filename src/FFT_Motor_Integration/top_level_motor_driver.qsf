@@ -1118,44 +1118,6 @@ set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_global_assignment -name EDA_TEST_BENCH_FILE json_command_sender_tb.sv -section_id json_command_sender_tb
-set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/TwiddleConvert8.v
-set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/TwiddleConvert4.v
-set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/Twiddle.v
-set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/SdfUnit2.v
-set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/SdfUnit_TC.v
-set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/Multiply.v
-set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/FFT.v
-set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/DelayBuffer.v
-set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/Butterfly.v
-set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/mic/set_audio_encoder.sv
-set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/mic/mic_load.sv
-set_global_assignment -name QIP_FILE FFT_files/mic/i2c_pll.qip
-set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/mic/i2c_master.sv
-set_global_assignment -name QIP_FILE FFT_files/mic/adc_pll.qip
-set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/low_pass_conv.sv
-set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/fft_pitch_detect.sv
-set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/fft_mag_sq.sv
-set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/fft_input_buffer.sv
-set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/fft_find_peak.sv
-set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/dstream.sv
-set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/display.sv
-set_global_assignment -name QIP_FILE FFT_files/async_fifo.qip
-set_global_assignment -name SYSTEMVERILOG_FILE nbit_synchroniser.sv
-set_global_assignment -name SYSTEMVERILOG_FILE continuous_motor_control.sv
-set_global_assignment -name SYSTEMVERILOG_FILE speed_control_mapping.sv
-set_global_assignment -name SYSTEMVERILOG_FILE stop.sv
-set_global_assignment -name SYSTEMVERILOG_FILE direction_fsm.sv
-set_global_assignment -name SYSTEMVERILOG_FILE forward.sv
-set_global_assignment -name SYSTEMVERILOG_FILE backwards.sv
-set_global_assignment -name SYSTEMVERILOG_FILE synchroniser.sv
-set_global_assignment -name SYSTEMVERILOG_FILE lcd_inst_pkg.sv
-set_global_assignment -name SYSTEMVERILOG_FILE edge_detect.sv
-set_global_assignment -name SYSTEMVERILOG_FILE debounce.sv
-set_global_assignment -name SYSTEMVERILOG_FILE uart_tx_tb.sv
-set_global_assignment -name SYSTEMVERILOG_FILE uart_tx.sv
-set_global_assignment -name SYSTEMVERILOG_FILE top_level_motor_driver.sv
-set_global_assignment -name SYSTEMVERILOG_FILE json_command_sender_tb.sv
-set_global_assignment -name SYSTEMVERILOG_FILE json_command_sender.sv
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -entity top_level -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -entity top_level -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -entity top_level -section_id Top
@@ -1213,4 +1175,44 @@ set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_RO
 set_global_assignment -name PARTITION_COLOR 16764057 -entity digital_cam_impl1 -section_id Top
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -entity digital_cam_impl1 -section_id Top
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -entity top_level -section_id Top
+set_global_assignment -name SYSTEMVERILOG_FILE top_level_distance_sensor.sv
+set_global_assignment -name SYSTEMVERILOG_FILE sensor_driver.sv
+set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/TwiddleConvert8.v
+set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/TwiddleConvert4.v
+set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/Twiddle.v
+set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/SdfUnit2.v
+set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/SdfUnit_TC.v
+set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/Multiply.v
+set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/FFT.v
+set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/DelayBuffer.v
+set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/Butterfly.v
+set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/mic/set_audio_encoder.sv
+set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/mic/mic_load.sv
+set_global_assignment -name QIP_FILE FFT_files/mic/i2c_pll.qip
+set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/mic/i2c_master.sv
+set_global_assignment -name QIP_FILE FFT_files/mic/adc_pll.qip
+set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/low_pass_conv.sv
+set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/fft_pitch_detect.sv
+set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/fft_mag_sq.sv
+set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/fft_input_buffer.sv
+set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/fft_find_peak.sv
+set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/dstream.sv
+set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/display.sv
+set_global_assignment -name QIP_FILE FFT_files/async_fifo.qip
+set_global_assignment -name SYSTEMVERILOG_FILE nbit_synchroniser.sv
+set_global_assignment -name SYSTEMVERILOG_FILE continuous_motor_control.sv
+set_global_assignment -name SYSTEMVERILOG_FILE speed_control_mapping.sv
+set_global_assignment -name SYSTEMVERILOG_FILE stop.sv
+set_global_assignment -name SYSTEMVERILOG_FILE direction_fsm.sv
+set_global_assignment -name SYSTEMVERILOG_FILE forward.sv
+set_global_assignment -name SYSTEMVERILOG_FILE backwards.sv
+set_global_assignment -name SYSTEMVERILOG_FILE synchroniser.sv
+set_global_assignment -name SYSTEMVERILOG_FILE lcd_inst_pkg.sv
+set_global_assignment -name SYSTEMVERILOG_FILE edge_detect.sv
+set_global_assignment -name SYSTEMVERILOG_FILE debounce.sv
+set_global_assignment -name SYSTEMVERILOG_FILE uart_tx_tb.sv
+set_global_assignment -name SYSTEMVERILOG_FILE uart_tx.sv
+set_global_assignment -name SYSTEMVERILOG_FILE top_level_motor_driver.sv
+set_global_assignment -name SYSTEMVERILOG_FILE json_command_sender_tb.sv
+set_global_assignment -name SYSTEMVERILOG_FILE json_command_sender.sv
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
