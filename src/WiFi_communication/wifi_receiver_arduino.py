@@ -4,108 +4,116 @@ import time
 from PIL import Image
 
 # IP address and port of the Arduino Nano 33 IoT
-SERVER_IP = '10.70.139.190'  # Replace with your Arduino's actual IP address
+# Replace with  Arduino's actual IP address
+SERVER_IP = '10.70.139.190'  
 PORT = 80
 
+#number of pixels to expect in image
+num_pixels = 2500
+
+"""
+@brief this function receives an image from WiFi after a connection is made
+"""
 def receive_image():
-
-    image = []
-
+    
     while True:
-        print("foo")
         try:
+            #open a connection with the Arduino
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((SERVER_IP, PORT))
             s.setblocking(False)
             
+            #announe connection and request arduino to clear 
+            #it's buffer
             print("Connected to Arduino server!")
             message = "F\n"
-
             s.sendall(message.encode('utf-8'))
             break
+        
+        #try to connect again
         except socket.error:
             print("Retrying connection...")
             time.sleep(1)  # Retry every second
+    
+    #Binary type for image information to be stored in
     image = b''
-    # input ("are you ready to receive?")
-    #TODO find correct amount to wait
+    
+    #a counter to count how many time the arduino has not received a pixel
     reset_counter = 0
-    while len(image) < 100 * 2:#320 * 240 * 2:# NOTE
-        # answer = input("would you like to send data")
+
+    #loop to wait until a full image has been received
+    while len(image) < num_pixels * 2:
+
+        if (len(image) == 0):
+            input ("are you ready to receive?")
+            s.sendall(B"S\n")
+        
+        # collect one pixel from WiFi
         data= request_receive(s)
-        # print("raw data received: ", data)
 
-        # if null_flag == 1:
-        #     reset_counter += 1
-        #     if reset_counter == 300:
-        #         image = b''
-        #         reset_counter = 0
-        #         data = None
-
+        #check if returned data is valid and append to image
         if data != None:
-            # image.append(data)
             image += data
             data = None
             reset_counter = 0
+        
+        # if no data received, take note
         else:
             reset_counter += 1
 
-            if reset_counter >= 10000:
+            # reset image since no image data is being sent
+            if reset_counter >= 100000:
                 image = b''
                 reset_counter = 0
-        # data = None
 
+        # track image size
+        # NOTE it is double size because each pixel is represented by 2 bytes
         if len(image) > 0:
-            # print("latest image data received: ", image[-1], "\n")
             print(f"Image length: {len(image)}")
-        # data = s.recv(1024)
+
     s.close()
-    print()
     return image
 
-
+"""
+@brief this function 
+"""
 def reconstruct_image(pixel_data):
     print("building image")
-    img = Image.new('RGB', (320, 240))
-    for i in range(100):
+    
+    #declare image dimension
+    # NOTE should be changed to the appropriate dimensions e.g. 10x10 or 320x240
+    img = Image.new('RGB', (50, 50))
+    for i in range(num_pixels):
         pixel_value = (pixel_data[2 * i] << 8) | pixel_data[2 * i + 1]
-        print(pixel_value)
+
+        # TODO Sanity check bitwise operations please
         r = (pixel_value >> 8) & 0xF
         g = (pixel_value >> 4) & 0xF
         b = pixel_value & 0xF
-        img.putpixel((i % 320, i // 320), (r << 4, g << 4, b << 4))
+
+        # Place pixels in image
+        # NOTE both these values should be the image width e.g. 10, or 320
+        img.putpixel((i % 50, i // 50), (r << 4, g << 4, b << 4))
     img.show()
 
 
 def request_receive(open_socket):
-    message = "SEND_DATA\n"
-    # print("Requesting data from Arduino")
+
+    # check if WiFi socket is clear and available to have a message sent over
+    # request another pixel
     readable, writable, exceptional = select.select([open_socket], [open_socket], [], 0)
     if writable:
         open_socket.sendall(B"S\n")
-    # print("request sent")
 
-    #check if there is available data
+    #check if there is available data to read, then read one byte
     readable, writable, exceptional = select.select([open_socket], [open_socket], [], 0)
     if readable:
+
+        # read 1 byte and check if it is good and valid
         data = open_socket.recv(1)
-    # print("data received, now to test quality")
         if data:
-            # try:
-            #     data = data.decode('utf-8')
-            #     if (data == "NULL") or data == b'\x33':
-            #         print("null data received")
-            #         return None
-            #     else: 
-            #         print("data received")
-            #         return data.encode('utf-8')
-            # except:
-            # print("in except block: ", data)
             return data
-            if data == b'\x00':
-                return data, 1
-            else:
-                return data, 0
+
     #if no available data, return None
     else:
         return None
