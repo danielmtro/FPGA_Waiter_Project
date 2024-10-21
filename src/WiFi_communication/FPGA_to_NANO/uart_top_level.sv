@@ -7,7 +7,8 @@ module uart_top_level #(
 	input CLOCK2_50,
 	
 	output logic [35:0] GPIO,
-	input logic [3:0] KEY
+	input logic [3:0] KEY,
+	output [7:0] LEDG
 
 );
 
@@ -15,7 +16,7 @@ module uart_top_level #(
 	assign clk = CLOCK2_50;
 
 	logic [7:0] data_tx;
-	assign data_tx = 8'b01100001; // ASCII 'a'
+	assign data_tx = 8'b1111_0000; // XF0
 	
 	logic reset;
 	assign reset = KEY[0];
@@ -35,6 +36,8 @@ module uart_top_level #(
 	
 	assign valid_in = button_edge;
 	
+	logic baud_trigger;
+	assign LEDG[0] = baud_trigger;
 	uart_tx #(
         .CLKS_PER_BIT(CLKS_PER_BIT),
         .BITS_N(BITS_N),
@@ -45,7 +48,8 @@ module uart_top_level #(
         .data_tx(data_tx),
         .valid_in(valid_in),
         .uart_out(GPIO[1]),
-        .ready_out(uart_ready_out)
+        .ready_out(uart_ready_out),
+		  .baud_trigger(baud_trigger)
     ); 
 	 
 endmodule 

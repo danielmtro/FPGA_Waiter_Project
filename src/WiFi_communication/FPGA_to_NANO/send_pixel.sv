@@ -93,7 +93,8 @@ module send_pixel(
 				data_tx = low_byte;
 			end
 			default: begin
-				ready_out = 1;
+				ready_out = 0;
+				valid_out = 0;
 				data_tx = 1;
 			end
 		endcase
