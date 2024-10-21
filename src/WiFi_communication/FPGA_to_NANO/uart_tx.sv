@@ -11,24 +11,34 @@
 		
 		output logic uart_out,
       output logic ready_out,      // Handshake protocol: ready_out (when this UART module is ready_out to send data).
-		output logic valid_out
+		output logic valid_out,
+		output logic baud_trigger
  );
 
    logic [BITS_N-1:0] data_tx_temp;
    logic [2:0]        bit_n;
 
-   enum {IDLE, START_BIT, DATA_BITS, PARITY_BIT, STOP_BIT} current_state, next_state;
+   enum {IDLE, START_BIT, DATA_BITS, PARITY_BIT, STOP_BIT, HOLD_BAY} current_state, next_state;
 
    //setting baud Baud_rate
    integer counter = 0;
-   logic baud_trigger;
+//   logic baud_trigger;
 
    assign baud_trigger = (counter == CLKS_PER_BIT-1);
 
    always_ff @(posedge clk) begin
-      counter <= (counter == CLKS_PER_BIT-1) ? 0 : counter + 1;
+      counter <= (counter == CLKS_PER_BIT-1) ? 0 : (current_state == IDLE) ? 0 : counter + 1;
    end
-
+	
+	logic [7:0] hold_counter;
+	
+	always_ff @(posedge baud_trigger) begin
+		hold_counter <= (hold_counter == 8'b00000101) ? 0 : (current_state != HOLD_BAY) ? 0 : hold_counter + 1;
+	end
+	
+	logic hold_trigger;
+	assign hold_trigger = (hold_counter == 8'b00000101);
+	
 
    always_comb begin : fsm_next_state
          case (current_state)
@@ -36,7 +46,8 @@
             START_BIT:   next_state = baud_trigger ? DATA_BITS : START_BIT;
             DATA_BITS:   next_state = baud_trigger ? ((bit_n == BITS_N-1) ? (PARITY_TYPE ? PARITY_BIT : STOP_BIT) : DATA_BITS) : DATA_BITS; // Send all `BITS_N` bits.
             PARITY_BIT:  next_state = (PARITY_TYPE == 0) ? STOP_BIT : (baud_trigger ? STOP_BIT : PARITY_BIT);
-            STOP_BIT:    next_state = baud_trigger ? IDLE : STOP_BIT;
+            STOP_BIT:    next_state = baud_trigger ? HOLD_BAY : STOP_BIT;
+				HOLD_BAY:	 next_state = hold_trigger ? IDLE : HOLD_BAY;
             default:     next_state = IDLE;
          endcase
    end
