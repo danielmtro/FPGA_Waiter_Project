@@ -34,16 +34,25 @@ send_pixel_top_level #(
         $dumpvars();
         // Initialize signals
         KEY[0] = 0;
-
+			KEY[1] = 0;
         // Release reset
         #(5 * CLK_PERIOD);
         KEY[0] = 1;
-
+		  
+		  
+		  
+		  #(5*CLK_PERIOD);
+		  KEY[1] = 1;
+		  #(5*CLK_PERIOD);
+		  KEY[1] = 0;
         
         // Test complete
+//		  #(8000 * CLK_PERIOD);
+//		  #(8000 * CLK_PERIOD);
+//		  #(8000 * CLK_PERIOD);
         #(600000 * CLK_PERIOD);
 		  #(600000 * CLK_PERIOD);
-		  #(1000 * CLK_PERIOD);
+		  #(8000 * CLK_PERIOD);
         $finish();
     end
 	 
