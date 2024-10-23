@@ -1,9 +1,10 @@
 module direction_fsm #(
-    parameter FREQUENCY = 13
+    parameter FREQUENCY = 13,
+	 parameter TOO_CLOSE = 8'd30
 )(
     input           		  clk,
 	 input logic [9:0] frequency_input, // frequency input
-    input logic too_close, // ultrasonic input
+    input logic [7:0] distance, // ultrasonic input
 	 input logic [4:0] threshold_frequency,
     output [2:0] direction
 );
@@ -51,12 +52,12 @@ module direction_fsm #(
                 end
             end
             FORWARDS : begin
-                if(too_close && i >= TIME_FOR_2s) begin // corresponds to two seconds at 50MHz
+                if(distance < TOO_CLOSE && i >= TIME_FOR_2s) begin // corresponds to two seconds at 50MHz
                     next_state = IDLE_TABLE;
                 end
             end
             BACKWARDS : begin
-                if(too_close && i >= TIME_FOR_2s) begin
+                if(distance < TOO_CLOSE && i >= TIME_FOR_2s) begin
                     next_state = IDLE_BASE;
                 end
             end
