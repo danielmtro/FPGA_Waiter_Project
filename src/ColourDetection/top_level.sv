@@ -150,6 +150,8 @@ module top_level(
   
   assign upper_thresh = 4'b1000; // can be changed to SW[5:2] for calibration
  
+ // detects and outputs predominantly red pixels.
+ // saves the number of pixels in red_pixels variable
   colour_detect cd0(
 	.clk(clk_50),
 	.data_in(rddata),
@@ -168,7 +170,7 @@ module top_level(
   
   assign display_data = (decision) ? colour_data : rddata;
   
-	 
+  // in case we want to interface with the vga
   vga_interface vgai0 (
 			 .clk_clk(clk_25_vga),                                         //                                       clk.clk
 			 .reset_reset_n(1'b1),                                   //                                     reset.reset_n
