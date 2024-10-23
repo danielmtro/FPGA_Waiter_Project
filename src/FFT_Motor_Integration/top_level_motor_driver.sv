@@ -76,12 +76,20 @@ module top_level_motor_driver (
 		.AUD_ADCLRCK(AUD_ADCLRCK),
 		.mic_freq(mic_freq)
 	);
+	
+	// display threshold values on hex6 and hex7
+	display_2digit  d2d(
+    .clk(CLOCK_50),
+    .value(tval),
+    .display0(HEX6),
+    .display1(HEX7)
+	);
 
-									
-	logic [2:0] fft_speed;
-	logic [2:0] speed;
-	assign fft_speed = mic_freq[2:0];
-	assign speed = fft_speed + 1; // increase fft speed by one so we aren't stationary
+//									
+//	logic [2:0] fft_speed;
+//	logic [2:0] speed;
+//	assign fft_speed = mic_freq[2:0];
+//	assign speed = fft_speed + 1; // increase fft speed by one so we aren't stationary
 	
 	// visualise pitch output
 	display u_display (.clk(CLOCK_50),.value(mic_freq),.display0(HEX0),.display1(HEX1),.display2(HEX2),.display3(HEX3));
@@ -103,7 +111,7 @@ module top_level_motor_driver (
 	);
 	
 	// create sensor data
-	// print sensor data on the hexs
+	// print sensor data on the hexs 4 and 5
 	logic [7:0] distance;
 	top_level_distance_sensor tlds (
 		.CLOCK_50(CLOCK_50),
@@ -112,9 +120,7 @@ module top_level_motor_driver (
 		.reset(reset_ultra),
 		.ultrasonic_distance(distance),
 		.HEX4(HEX4),
-		.HEX5(HEX5),
-		.HEX6(HEX6),
-		.HEX7(HEX7)
+		.HEX5(HEX5)
 	);
 	
 	// variables for handling drive control commands
@@ -139,7 +145,8 @@ module top_level_motor_driver (
 	// start up the directional state machine
 	
 	
-	direction_fsm dfsm (
+	// state machine for high level logic
+	direction_fsm #(.TOO_CLOSE(8'd20)) dfsm (
 		.clk(CLOCK_50),
 		.frequency_input(mic_freq),
 		.distance(distance),
@@ -148,6 +155,19 @@ module top_level_motor_driver (
 	);
 	
 	
+	// speed control
+	logic [2:0] speed;
+	speed_fsm sfsm (
+		.CLOCK_50(CLOCK_50),
+		.direction(direction),
+		.mic_freq(mic_freq),
+		.threshold_frequency(tval),
+		.speed(speed)
+	);
+	
+	assign LEDR[2:0]  = speed;
+	
+	// actual motor control
 	logic uart_out;
 	drive_motor dm (
 		.CLOCK_50(CLOCK_50),

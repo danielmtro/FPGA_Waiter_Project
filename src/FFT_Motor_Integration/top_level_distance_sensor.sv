@@ -5,9 +5,7 @@ module top_level_distance_sensor(
 	input reset,
 	output [7:0] ultrasonic_distance,
 	output [6:0] HEX4,
-	output [6:0] HEX5,
-	output [6:0] HEX6,
-	output [6:0] HEX7
+	output [6:0] HEX5
 );
 
 logic start;
@@ -35,7 +33,13 @@ sensor_driver u0(
 );
 
  
- display dist_display (.clk(CLOCK_50),.value(distance),.display0(HEX4),.display1(HEX5),.display2(HEX6),.display3(HEX7));
+ display_2digit  d2d(
+    .clk(CLOCK_50),
+    .value(distance),
+    .display0(HEX4),
+    .display1(HEX5)
+	);
+
  assign ultrasonic_distance = distance;
  
 endmodule

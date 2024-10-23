@@ -9,9 +9,35 @@ module direction_fsm #(
     output [2:0] direction
 );
 
-	 // add a frequency delay to terms
+	 // add a delay to the distance calculation
+	 
+	// create a distance shift register
+	logic [7:0] distances [1:0];
+	logic too_close;
+	
+	
+	always_ff @(posedge clk) begin
+		
+		// process through shift register
+		if(distance != distances[0]) begin
+			distances[1] <= distances[0];
+			distances[0] <= distance;
+		end
 
-    // State teypedef enum used here
+	end
+	
+	// set a signal based on the data incoming
+	always_comb begin
+		if(distances[0] <= TOO_CLOSE && distances[1] <= TOO_CLOSE) begin
+			too_close = 1'b1;
+		end
+		else begin
+			too_close = 1'b0;
+		end
+	end
+	
+
+    // State typedef enum used here
 	 // Note that we specify the exact encoding that we want to use for each state
     typedef enum logic [2:0] {
         IDLE_BASE = 3'b000,
@@ -52,12 +78,12 @@ module direction_fsm #(
                 end
             end
             FORWARDS : begin
-                if(distance < TOO_CLOSE && i >= TIME_FOR_2s) begin // corresponds to two seconds at 50MHz
+                if(too_close && i >= TIME_FOR_2s) begin // corresponds to two seconds at 50MHz
                     next_state = IDLE_TABLE;
                 end
             end
             BACKWARDS : begin
-                if(distance < TOO_CLOSE && i >= TIME_FOR_2s) begin
+                if(too_close && i >= TIME_FOR_2s) begin
                     next_state = IDLE_BASE;
                 end
             end

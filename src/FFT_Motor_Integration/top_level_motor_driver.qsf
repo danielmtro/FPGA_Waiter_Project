@@ -1218,4 +1218,6 @@ set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_global_assignment -name SYSTEMVERILOG_FILE FFT_top_level.sv
 set_global_assignment -name SYSTEMVERILOG_FILE drive_motor.sv
 set_global_assignment -name SYSTEMVERILOG_FILE reset_pulser.sv
+set_global_assignment -name SYSTEMVERILOG_FILE speed_fsm.sv
+set_global_assignment -name SYSTEMVERILOG_FILE display_2digit.sv
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
