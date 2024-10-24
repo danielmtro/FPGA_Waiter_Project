@@ -43,18 +43,18 @@ module top_level_motor_driver (
 	wire [7:0] ov7670_data; assign ov7670_data  = GPIO[19:12];
 	wire ov7670_sioc; assign GPIO[25]     = ov7670_sioc;
 	wire ov7670_siod; assign GPIO[24]     = ov7670_siod;
-	wire ov7670_pwdn;
+	wire ov7670_pwdn; assign GPIO[10]     = ov7670_pwdn;
 	wire ov7670_reset;assign GPIO[11]     = ov7670_reset;
 
 	// vga outputs
-	wire vga_hsync; assign vga_hsync 	  = VGA_HS;
-	wire vga_vsync; assign vga_vsync 	  = VGA_VS;
-	wire [7:0] vga_r; assign vga_r 		  = VGA_R;
-	wire [7:0] vga_g; assign vga_g 		  = VGA_G;
-	wire [7:0] vga_b; assign vga_b 		  = VGA_B;
-	wire vga_blank_N; assign vga_blank_N  = VGA_BLANK_N;
-	wire vga_sync_N; assign vga_sync_N	  = VGA_SYNC_N;
-	wire vga_CLK; assign vga_CLK		  = VGA_CLK;
+	wire vga_hsync; assign VGA_HS 	      = vga_hsync;
+	wire vga_vsync; assign VGA_VS 	      = vga_vsync;
+	wire [7:0] vga_r; assign VGA_R		  = vga_r;
+	wire [7:0] vga_g; assign VGA_G 		  = vga_g;
+	wire [7:0] vga_b; assign VGA_B 		  = vga_b;
+	wire vga_blank_N; assign VGA_BLANK_N  = vga_blank_N;
+	wire vga_sync_N; assign VGA_SYNC_N	  = vga_sync_N;
+	wire vga_CLK; assign VGA_CLK		  = vga_CLK;
 
 	logic [3:0] debounced_keys;
 	logic [3:0] edge_detect_keys;
