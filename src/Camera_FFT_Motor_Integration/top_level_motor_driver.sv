@@ -25,28 +25,36 @@ module top_level_motor_driver (
 	input    	 AUD_ADCLRCK,
 	
 	// vga  outputs
-	output wire vga_hsync,
-	output wire vga_vsync,
-	output wire [7:0] vga_r,
-	output wire [7:0] vga_g,
-	output wire [7:0] vga_b,
-	output wire vga_blank_N,
-	output wire vga_sync_N,
-	output wire vga_CLK,
-	
-	// Camera Inputs and Outputs
-	input wire ov7670_pclk,
-	output wire ov7670_xclk,
-	input wire ov7670_vsync,
-	input wire ov7670_href,
-	input wire [7:0] ov7670_data,
-	output wire ov7670_sioc,
-	inout wire ov7670_siod,
-	output wire ov7670_pwdn,
-	output wire ov7670_reset
+	output wire VGA_HS,
+	output wire VGA_VS,
+	output wire [7:0] VGA_R,
+	output wire [7:0] VGA_G,
+	output wire [7:0] VGA_B,
+	output wire VGA_BLANK_N,
+	output wire VGA_SYNC_N,
+	output wire VGA_CLK
 
 );
+	// Camera Inputs and Outputs
+	wire ov7670_pclk; assign ov7670_pclk  = GPIO[21];
+	wire ov7670_xclk; assign GPIO[20]     = ov7670_xclk;
+	wire ov7670_vsync;assign ov7670_vsync = GPIO[23];
+	wire ov7670_href; assign ov7670_href  = GPIO[22];
+	wire [7:0] ov7670_data; assign ov7670_data  = GPIO[19:12];
+	wire ov7670_sioc; assign GPIO[25]     = ov7670_sioc;
+	wire ov7670_siod; assign GPIO[24]     = ov7670_siod;
+	wire ov7670_pwdn;
+	wire ov7670_reset;assign GPIO[11]     = ov7670_reset;
 
+	// vga outputs
+	wire vga_hsync; assign vga_hsync 	  = VGA_HS;
+	wire vga_vsync; assign vga_vsync 	  = VGA_VS;
+	wire [7:0] vga_r; assign vga_r 		  = VGA_R;
+	wire [7:0] vga_g; assign vga_g 		  = VGA_G;
+	wire [7:0] vga_b; assign vga_b 		  = VGA_B;
+	wire vga_blank_N; assign vga_blank_N  = VGA_BLANK_N;
+	wire vga_sync_N; assign vga_sync_N	  = VGA_SYNC_N;
+	wire vga_CLK; assign vga_CLK		  = VGA_CLK;
 
 	logic [3:0] debounced_keys;
 	logic [3:0] edge_detect_keys;
