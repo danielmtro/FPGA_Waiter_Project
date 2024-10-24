@@ -63,97 +63,21 @@ module send_pixel_top_level #(
 	
 	//--------------SEND CHAD HO---------------------------------------------
 //	
-	logic [11:0] chad_ho [IMAGE_SIZE];
-	
-	initial begin
-		for (int i=0; i < 2500; i=i+1) begin
-			chad_ho[i] = (i > 1000 && i < 2000) ? 12'b1111_0000_0000 : 12'b0000_0000_1111;
-		end
-	end
-	
-	
-	
-	
-	
-	//count thorugh each pixel
-	logic [16:0] index = 0;
-//	logic [16:0] pixel_address_next;
-	
-	logic key_edge;
-	
-	edge_detect edge_detection(
-    .clk(clk),
-    .button(debounced_key),
-    .button_edge(key_edge)
-	);
-	
-	//state definitions
-	enum {IDLE, SEND_IMAGE} current_state, next_state;
-	
-	//FSM next state
-	always_comb begin : FSM_next_state
-		
-		case (current_state)
-			
-			IDLE: begin
-				next_state = (key_edge) ? SEND_IMAGE : IDLE;
-			end
-			SEND_IMAGE: begin
-				next_state = ((send_ready_out == 1) && (index == IMAGE_SIZE - 1)) ? IDLE : SEND_IMAGE;
-			end
-			default: next_state = IDLE;
-			
-		endcase
-	end
-	
-	// state transition
-	always_ff @(posedge clk) begin : state_transition
-		if (reset == 0) begin
-			current_state <= IDLE;
-		end
-		
-		else begin
-			current_state <= next_state;
-		end
-	end
-	
-	//set the counter
-	always_ff @(posedge send_ready_out) begin
-		
-		if (reset==0) begin
-			index <= 0;
-		end
-		
-		else begin
-			//count only when in SEND_IMAGE 
-			case (current_state)
-				IDLE: begin
-					index <= 0;
-				end
-				SEND_IMAGE: begin
-					if (index < IMAGE_SIZE) begin
-						index <= index + 1;
-					end
-					else begin
-						index <= index;
-					end
-				end
-			endcase
-		end
-	end
-	
-	always_ff @(posedge clk) begin
-		pixel <= chad_ho[index];
-	end
-	
-//	assign pixel = chad_ho[index]; //apparently need to make this always_ff
-	assign send_valid_in = (send_ready_out && (current_state == SEND_IMAGE));
-	
-//
-//--------------------------------------------------------------------------------
-//-----------SEND 10X10 TEAEM FLAG-----------------
-//	logic [16:0] index;
-//	logic [16:0] index_next;
+//	logic [11:0] chad_ho [IMAGE_SIZE];
+//	
+//	initial begin
+//		for (int i=0; i < 2500; i=i+1) begin
+//			chad_ho[i] = (i > 1000 && i < 2000) ? 12'b1111_0000_0000 : 12'b0000_0000_1111;
+//		end
+//	end
+//	
+//	
+//	
+//	
+//	
+//	//count thorugh each pixel
+//	logic [16:0] index = 0;
+////	logic [16:0] pixel_address_next;
 //	
 //	logic key_edge;
 //	
@@ -163,19 +87,10 @@ module send_pixel_top_level #(
 //    .button_edge(key_edge)
 //	);
 //	
-////	initialise ram image
-//	logic [11:0] image [100];
-//	
-//	initial begin
-//		for (int i=0; i < 100; i=i+1) begin
-//			image[i] = (i > 25 && i < 75) ? 12'b1111_0000_1010 : 12'b0000_1111_0000;
-//		end
-//	end
-//	
-//	//state machine definition
+//	//state definitions
 //	enum {IDLE, SEND_IMAGE} current_state, next_state;
 //	
-//	//FSM nnext state logic
+//	//FSM next state
 //	always_comb begin : FSM_next_state
 //		
 //		case (current_state)
@@ -184,14 +99,14 @@ module send_pixel_top_level #(
 //				next_state = (key_edge) ? SEND_IMAGE : IDLE;
 //			end
 //			SEND_IMAGE: begin
-//				next_state = ((send_ready_out == 1) && (index == 99)) ? IDLE : SEND_IMAGE;
+//				next_state = ((send_ready_out == 1) && (index == IMAGE_SIZE - 1)) ? IDLE : SEND_IMAGE;
 //			end
 //			default: next_state = IDLE;
 //			
 //		endcase
 //	end
 //	
-//	//state transitioin
+//	// state transition
 //	always_ff @(posedge clk) begin : state_transition
 //		if (reset == 0) begin
 //			current_state <= IDLE;
@@ -202,7 +117,6 @@ module send_pixel_top_level #(
 //		end
 //	end
 //	
-//	//logic for indexing image
 //	//set the counter
 //	always_ff @(posedge send_ready_out) begin
 //		
@@ -217,7 +131,7 @@ module send_pixel_top_level #(
 //					index <= 0;
 //				end
 //				SEND_IMAGE: begin
-//					if (index < 100) begin
+//					if (index < IMAGE_SIZE) begin
 //						index <= index + 1;
 //					end
 //					else begin
@@ -227,12 +141,100 @@ module send_pixel_top_level #(
 //			endcase
 //		end
 //	end
-//
+//	
 //	always_ff @(posedge clk) begin
-//		pixel <= image[index];
+//		pixel <= chad_ho[index];
 //	end
 //	
+////	assign pixel = chad_ho[index]; //apparently need to make this always_ff
 //	assign send_valid_in = (send_ready_out && (current_state == SEND_IMAGE));
+	
+//
+//--------------------------------------------------------------------------------
+//-----------SEND 10X10 TEAEM FLAG-----------------
+	logic [16:0] index;
+	logic [16:0] index_next;
+	
+	logic key_edge;
+	//debounced_key
+	//GPIO[0]
+	edge_detect edge_detection(
+    .clk(clk),
+    .button(GPIO[0]),
+    .button_edge(key_edge)
+	);
+	
+//	initialise ram image
+	logic [11:0] image [100];
+	
+	initial begin
+		for (int i=0; i < 100; i=i+1) begin
+			image[i] = (i > 25 && i < 75) ? 12'b1111_0000_0000 : 12'b0000_0000_1111;
+		end
+	end
+	
+	//state machine definition
+	enum {IDLE, SEND_IMAGE} current_state, next_state;
+	
+	//FSM nnext state logic
+	always_comb begin : FSM_next_state
+		
+		case (current_state)
+			
+			IDLE: begin
+				next_state = (key_edge) ? SEND_IMAGE : IDLE;
+			end
+			SEND_IMAGE: begin
+				next_state = ((send_ready_out == 1) && (index >= 99)) ? IDLE : SEND_IMAGE;
+			end
+			default: next_state = IDLE;
+			
+		endcase
+	end
+	
+	//state transitioin
+	always_ff @(posedge clk) begin : state_transition
+		if (reset == 0) begin
+			current_state <= IDLE;
+		end
+		
+		else begin
+			current_state <= next_state;
+		end
+	end
+	
+	//logic for indexing image
+	//set the counter
+	always_ff @(posedge send_ready_out) begin
+		
+		if (reset==0) begin
+			index <= 0;
+		end
+		
+		else begin
+			//count only when in SEND_IMAGE 
+			case (current_state)
+				IDLE: begin
+					index <= 0;
+				end
+				SEND_IMAGE: begin
+					if (index < 100) begin
+						index <= index + 1;
+					end
+					else begin
+						index <= index;
+						
+					end
+				end
+			endcase
+		end
+	end
+
+	always_ff @(posedge clk) begin
+		pixel <= image[index];
+	end
+	
+	assign send_valid_in = (send_ready_out && (current_state == SEND_IMAGE));
 	
 //--------------------------------------------------------------	
 //-----------------SEND SINGLE PIXEL ON BUTTON PRESS-------------------

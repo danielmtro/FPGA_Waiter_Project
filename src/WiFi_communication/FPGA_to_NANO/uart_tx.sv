@@ -46,7 +46,7 @@
             START_BIT:   next_state = baud_trigger ? DATA_BITS : START_BIT;
             DATA_BITS:   next_state = baud_trigger ? ((bit_n == BITS_N-1) ? (PARITY_TYPE ? PARITY_BIT : STOP_BIT) : DATA_BITS) : DATA_BITS; // Send all `BITS_N` bits.
             PARITY_BIT:  next_state = (PARITY_TYPE == 0) ? STOP_BIT : (baud_trigger ? STOP_BIT : PARITY_BIT);
-            STOP_BIT:    next_state = baud_trigger ? HOLD_BAY : STOP_BIT;
+            STOP_BIT:    next_state = baud_trigger ? IDLE : STOP_BIT;
 				HOLD_BAY:	 next_state = hold_trigger ? IDLE : HOLD_BAY;
             default:     next_state = IDLE;
          endcase
