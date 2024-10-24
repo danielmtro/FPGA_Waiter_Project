@@ -4,13 +4,13 @@
 
 module send_pixel(
 	input clk,
-   input rst,
-   input [11:0] pixel,
+	input rst,
+	input [11:0] pixel,
 	input valid_in,            // Handshake protocol: valid_in (when `data_tx` is valid_in to be sent onto the UART).
-	input logic ready_in,
+	input ready_in,
 		
 	output logic uart_out,
-   output logic ready_out,      // Handshake protocol: ready_out (when this UART module is ready_out to send data).
+	output logic ready_out,      // Handshake protocol: ready_out (when this UART module is ready_out to send data).
   	output logic valid_out
 );
 
@@ -18,22 +18,24 @@ module send_pixel(
 	logic [7:0] data_tx;
 	logic uart_valid_out;
 	logic uart_valid_in;
-	
+
+	// TX signals
 	localparam CLKS_PER_BIT = (50000000/115200);
-	
+
 	uart_tx #(
         .CLKS_PER_BIT(CLKS_PER_BIT),
         .BITS_N(8),
         .PARITY_TYPE(0) // Even parity
-    ) UART_TX (
+	) uart_tx (
         .clk(clk),
         .rst(rst),
-        .data_tx(data_tx),	  
+        .data_tx(data_tx),
         .valid_in(uart_valid_in),
-		  
-		  .valid_out(uart_valid_out),
         .uart_out(uart_out),
-        .ready_out(uart_ready_out)
+        .ready_out(uart_ready_out),
+		.ready_in(ready_in),
+		.baud_trigger(baud_trigger),
+		.valid_out(uart_valid_out)
     );
 	 
 	logic [7:0] high_byte;
@@ -47,14 +49,12 @@ module send_pixel(
 	enum {IDLE, SEND_HIGH_BYTE, SEND_LOW_BYTE} current_state, next_state, previous_state;
 	 
 	 //FSM next state logic
-	 
 	 always_comb begin :fsm_next_state_logic
 		next_state = current_state;
 		
 		case (current_state)
-		
 			IDLE: begin
-				next_state = valid_in ? SEND_HIGH_BYTE : IDLE;
+				next_state = (valid_in && ready_in) ? SEND_HIGH_BYTE : IDLE;
 			end
 			SEND_HIGH_BYTE: begin
 				next_state = uart_ready_out ? SEND_LOW_BYTE : SEND_HIGH_BYTE;
@@ -71,7 +71,7 @@ module send_pixel(
 	 end
 	 
 	 //assert uart_valid_in pulse whenchanging from IDLE ->
-	 assign uart_valid_in = (current_state != next_state & next_state != IDLE);
+	 assign uart_valid_in = (current_state != next_state && next_state != IDLE);
 	 
 	 //FSM state output
 	 always_comb begin : FSM_state_output

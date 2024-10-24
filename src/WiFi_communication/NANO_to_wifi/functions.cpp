@@ -26,8 +26,8 @@ void connectToWiFi(const char* ssid, const char* password){
 uint16_t receive_pixel(){
 
     // Receive the high and low bytes
-    uint8_t high_byte = Serial.read();  // First byte (high byte)
-    uint8_t low_byte = Serial.read();   // Second byte (low byte)
+    uint8_t high_byte = Serial1.read();  // First byte (high byte)
+    uint8_t low_byte = Serial1.read();   // Second byte (low byte)
 
     // Reconstruct the 12-bit pixel values
     uint16_t pixel = (high_byte << 4) | (low_byte & 0xFF); // Combine bytes

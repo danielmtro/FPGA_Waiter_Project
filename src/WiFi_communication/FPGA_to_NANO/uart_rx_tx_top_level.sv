@@ -39,17 +39,19 @@ module uart_top #(
 
     // Instantiate UART Transmitter
     uart_tx #(
-        .CLKS_PER_BIT(CLKS_PER_BIT),
+        .CLKS_PER_BIT(CLKS_PER_BIT_115200),
         .BITS_N(BITS_N),
         .PARITY_TYPE(PARITY_TYPE)
     ) uart_tx_inst (
         .clk(clk),
         .rst(rst),
         .data_tx(data_tx),
-        .valid_in(button_edge),        // Trigger TX on button press (detected edge)
-        .uart_out(uart_tx_out),
-        .ready_out(ready_out_tx_internal),
-        .valid_out(valid_out_tx_internal)
+        .valid_in(valid_in),
+        .ready_in(ready_in),
+        .uart_out(uart_out),
+        .ready_out(ready_out),
+		.valid_out(valid_out),
+		.baud_trigger(baud_trigger)
     );
 
     // Instantiate UART Receiver
