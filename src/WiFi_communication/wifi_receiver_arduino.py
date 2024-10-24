@@ -47,6 +47,7 @@ def receive_image():
         if (len(image) == 0):
             input ("are you ready to receive?")
             s.sendall(B"S\n")
+            # wait 100ms
         
         # collect one pixel from WiFi
         data= request_receive(s)

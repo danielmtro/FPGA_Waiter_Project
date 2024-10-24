@@ -53,7 +53,10 @@ void loop() {
         }
 
         //read 1 pixel off the Serial1 buffer and send it over WiFi
-        else if (request == "S"){        
+        else if (request == "S"){ 
+
+            Serial1.write('R'); // send the initial ready signal
+
             if(Serial1.available() >= 2){              
               pixel = receive_pixel();
 
@@ -64,6 +67,10 @@ void loop() {
               //pixel is only 12 bits not actually 16
               client.write((uint8_t)(pixel >> 8));  // Send high byte
               client.write((uint8_t)(pixel & 0xFF)); // Send low byte
+
+              // Send 'Ready' back to FPGA, signal ready for new pixels
+              Serial1.flush();
+              Serial1.write('R');
             }
         }
       }

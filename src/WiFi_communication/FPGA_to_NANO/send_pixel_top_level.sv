@@ -2,14 +2,13 @@ module send_pixel_top_level #(
 	parameter CLKS_PER_BIT = (50000000/115200), // E.g. Baud_rate = 115200 with FPGA clk = 50MHz
    parameter BITS_N       = 8, // Number of data bits per UART frame
    parameter PARITY_TYPE  = 0,  // 0 for none, 1 for odd parity, 2 for even.
-	parameter IMAGE_SIZE	  = 2500
+	parameter IMAGE_SIZE	  = 4
 	)(
-
-	input CLOCK2_50,
-	
-	inout logic [35:0] GPIO,
+	input CLOCK2_50,	
+	//inout logic [35:0] GPIO,
+	input GPIO_rx,
+	output GPIO_tx,
 	input logic [3:0] KEY
-
 );
 
 //   (* ram_init_file = "chad-ho-320x240.mif" *)  logic [11:0]  chad_ho [76800];
@@ -24,67 +23,82 @@ module send_pixel_top_level #(
 	logic send_valid_in;
 	logic send_ready_in;
 	
+	// UART TX
 	logic uart_out;
-	assign GPIO[1] = uart_out;
+	assign GPIO_tx = uart_out;
 //	assign uart_out = GPIO[1];
 	logic send_ready_out;
 	logic send_valid_out;
-	
-   
+	logic baud_trigger;
+
+	// RX signals
+	logic tx_ready_in;
+	logic [7:0] data_rx;
+	logic uart_in;
+	logic valid_out_rx;
+
+	assign uart_in = GPIO_rx;
 	
 //	initial begin: memset
 //	 $readmemh("chad-ho-320x240.hex", chad_ho);
 //	end
 	
 	send_pixel send_pixel0 (
-		.clk(clk),
-		.rst(reset),
-		.pixel(pixel),
-		.valid_in(send_valid_in),            // Handshake protocol: valid_in (when `data_tx` is valid_in to be sent onto the UART).
-		.ready_in(send_ready_in),
+		.clk(clk),					 // Clock signal
+		.rst(reset),				 // Reset signal
+		.pixel(pixel),				 // Pixel input set manually
+		.valid_in(send_valid_in),    // Handshake protocol: valid_in (when `data_tx` is valid_in to be sent onto the UART).
+		.ready_in(tx_ready_in),		 // Ready in received from RX code
 		
-		.uart_out(uart_out),
-		.ready_out(send_ready_out),      // Handshake protocol: ready_out (when this UART module is ready_out to send data).
-		.valid_out(send_valid_out)
+		.uart_out(uart_out),		 // Transmission output connected to GPIO pin
+		.ready_out(send_ready_out),  // Handshake protocol: ready_out (when this UART module is ready_out to send data).
+		.valid_out(send_valid_out)	 // Valid out received by RX for tx_alert
 	);
+
+	uart_rx #(
+        .CLKS_PER_BIT(CLKS_PER_BIT),
+        .BITS_N(BITS_N),
+        .PARITY_TYPE(0)
+	) uart_rx (
+        .clk(clk),						// clock input
+        .rst(reset),						// reset
+        .uart_in(uart_in),              // Connect GPIO RX to the UART RX input
+        .data_rx(data_rx),				// Output data
+        .valid_out(valid_out_rx),		// Valid out signal
+        .ready_out(),                    // Receiver is always ready for simplicity
+		.pixel_sent(tx_ready_in),		// Output signal used by ready_in for send_pixel
+		.tx_alert(send_valid_out)		// Receives signal from send_pixel when data transmission is occurring
+    );
 	
 	//debounce KEY[1]
 	logic debounced_key;
 	debounce #(
-  .DELAY_COUNTS(2500)/*FILL-IN*/ // 50us with clk period 20ns is ____ counts
+  		.DELAY_COUNTS(2500)/*FILL-IN*/ // 50us with clk period 20ns is ____ counts
 	) debounc_key1(
-    .clk(clk),
-	 .button(KEY[1]),
-    .button_pressed(debounced_key)
+		.clk(clk),
+		.button(KEY[1]),
+    	.button_pressed(debounced_key)
 	);
 	
-	
 	//import chad-ho and save into BRAM
-	
-	//--------------SEND CHAD HO---------------------------------------------
-//	
+	//--------------SEND CHAD HO---------------------------------------------	
 	logic [11:0] chad_ho [IMAGE_SIZE];
 	
 	initial begin
-		for (int i=0; i < 2500; i=i+1) begin
-			chad_ho[i] = (i > 1000 && i < 2000) ? 12'b1111_0000_0000 : 12'b0000_0000_1111;
+		for (int i=0; i < 4; i=i+1) begin
+			chad_ho[i] = (i > 1 && i <= 2000) ? 12'b1111_0000_0000 : 12'b0000_0000_1111;
 		end
 	end
-	
-	
-	
-	
-	
+
 	//count thorugh each pixel
-	logic [16:0] index = 0;
+	logic [3:0] index = 0;
 //	logic [16:0] pixel_address_next;
 	
 	logic key_edge;
-	
 	edge_detect edge_detection(
-    .clk(clk),
-    .button(debounced_key),
-    .button_edge(key_edge)
+    	.clk(clk),
+    	.button(debounced_key),
+    	.button_edge(key_edge)
 	);
 	
 	//state definitions
@@ -96,7 +110,7 @@ module send_pixel_top_level #(
 		case (current_state)
 			
 			IDLE: begin
-				next_state = (key_edge) ? SEND_IMAGE : IDLE;
+				next_state = (tx_ready_in) ? SEND_IMAGE : IDLE;
 			end
 			SEND_IMAGE: begin
 				next_state = ((send_ready_out == 1) && (index == IMAGE_SIZE - 1)) ? IDLE : SEND_IMAGE;

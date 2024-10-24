@@ -1,3 +1,5 @@
+// UART rx should only set tx ready when R is received
+
 module uart_rx #(
     parameter CLKS_PER_BIT = (50000000/115200), // E.g. Baud rate = 115200 with FPGA clk = 50MHz
     parameter BITS_N       = 8, // Number of data bits per UART frame
@@ -6,11 +8,13 @@ module uart_rx #(
     input clk,
     input rst,
     input uart_in,                // UART RX input (serial data line)
+	 input tx_alert,
     
     output logic [BITS_N-1:0] data_rx, // Received data
     output logic valid_out,       // Handshake protocol: valid_out (when valid data is received)
     output logic ready_out,       // Handshake protocol: ready_out (when this UART module is ready to receive data)
-    output logic parity_error     // Indicates a parity error if parity checking is enabled
+    output logic parity_error,     // Indicates a parity error if parity checking is enabled
+    output logic pixel_sent
 );
 
     logic [BITS_N-1:0] data_rx_temp;
@@ -18,6 +22,7 @@ module uart_rx #(
     logic baud_trigger;
     logic [BITS_N-1:0] shift_reg;
     logic parity_bit;
+	 logic pixel_sent_prev;
 
     enum {IDLE, START_BIT, DATA_BITS, PARITY_BIT, STOP_BIT} current_state, next_state;
 
@@ -44,11 +49,12 @@ module uart_rx #(
 
     // State transition and data capture
     always_ff @(posedge clk) begin
-        if (rst) begin
+        if (~rst) begin
             current_state <= IDLE;
             data_rx_temp <= 0;
             bit_n <= 0;
             parity_bit <= 0;
+				pixel_sent_prev <= 0;
         end else begin
             current_state <= next_state;
             case (current_state)
@@ -56,13 +62,22 @@ module uart_rx #(
                     data_rx_temp <= 0;
                     bit_n <= 0;
                     parity_bit <= 0;
+						  if (tx_alert) begin
+						      pixel_sent_prev <= 1'b0;
+						  end
                 end
+					 START_BIT: begin
+						  pixel_sent_prev <= 0;
+					 end
                 DATA_BITS: begin
                     if (baud_trigger) begin
                         data_rx_temp[bit_n] <= uart_in;
                         bit_n <= bit_n + 1'b1;
                     end
                 end
+					 STOP_BIT: begin
+						  pixel_sent_prev <= (data_rx_temp == 8'h52) ? 1'b1 : 1'b0;
+					 end
                 PARITY_BIT: begin
                     if (baud_trigger) begin
                         parity_bit <= uart_in;
@@ -78,11 +93,19 @@ module uart_rx #(
         valid_out = 0;
         ready_out = 0;
         parity_error = 0;
+        pixel_sent = 0;
 
         case (current_state)
-            IDLE: ready_out = 1'b1;  // Ready to receive new data
+            IDLE: begin
+					ready_out = 1'b1;  // Ready to receive new data
+					pixel_sent = pixel_sent_prev;
+				end
             STOP_BIT: begin
                 valid_out = baud_trigger ? 1'b1 : 1'b0;
+
+                if (data_rx == 8'h52) begin
+                    pixel_sent = 1'b1; 
+					 end
                 if (baud_trigger) begin
                     if (PARITY_TYPE != 0) begin
                         if (PARITY_TYPE == 1) // Odd parity

@@ -55,10 +55,12 @@ module uart_tb();
         clk = 0;
         gpio_rx = 1'b1; // Default idle state for UART RX (high)
         rst = 1'b1;  // Assert reset
-		  #(5 * CLK_PERIOD);          // Hold reset for some time
-		  rst = 1'b0;  // Deassert reset (ready to start)
 
-		  #(10 * CLK_PERIOD);
+		#(5 * CLK_PERIOD);          // Hold reset for some time
+		rst = 1'b0;  // Deassert reset (ready to start)
+
+		#(10 * CLK_PERIOD);
+        
         // Test case 1: Simulate receiving data on UART RX (for example, sending 0xA5)
         simulate_uart_rx(8'hA5);  // Send 0xA5 (10100101 in binary)
 

@@ -11,23 +11,32 @@ module uart_top_level #(
 	output [7:0] LEDG
 
 );
-
 	logic clk;
-	assign clk = CLOCK2_50;
-
-	logic [7:0] data_tx;
-	assign data_tx = 8'b1111_0000; // XF0
-	
 	logic reset;
-	assign reset = KEY[0];
-	
+
+	// UART TX signals
+	logic [7:0] data_tx;
 	logic valid_in;
-	
 	logic uart_ready_out;
 	logic uart_valid_out;
-	
+	logic uart_out;
+
 	logic button_edge;
+
+	logic baud_trigger;
 	
+	logic [7:0] data_rx;
+	logic tx_ready_in;
+	logic uart_in;
+
+	// UART RX signals
+
+	assign clk = CLOCK2_50;
+	assign reset = KEY[0];
+	assign LEDG[0] = baud_trigger;
+	assign data_tx = 8'b1111_0000; // XF0
+
+	// Detect edge from button press
 	edge_detect edge_detect1(
     .clk(clk),
     .button(KEY[1]),
@@ -36,8 +45,6 @@ module uart_top_level #(
 	
 	assign valid_in = button_edge;
 	
-	logic baud_trigger;
-	assign LEDG[0] = baud_trigger;
 	uart_tx #(
         .CLKS_PER_BIT(CLKS_PER_BIT),
         .BITS_N(BITS_N),
@@ -47,9 +54,27 @@ module uart_top_level #(
         .rst(reset),
         .data_tx(data_tx),
         .valid_in(valid_in),
-        .uart_out(GPIO[1]),
+        .uart_out(uart_out),
         .ready_out(uart_ready_out),
-		  .baud_trigger(baud_trigger)
+		.ready_in(tx_ready_in),
+		.baud_trigger(baud_trigger),
+		.valid_out(uart_valid_out)
     ); 
+
+	uart_rx #(
+        .CLKS_PER_BIT(CLKS_PER_BIT),
+        .BITS_N(BITS_N),
+        .PARITY_TYPE(0)
+    ) uart_rx (
+        .clk(clk),
+        .rst(reset),
+        .uart_in(uart_in),               // Connect GPIO RX to the UART RX input
+        .data_rx(data_rx),
+        .valid_out(valid_out_rx),
+        .ready_out(),                    // Receiver is always ready for simplicity
+		.baud_trigger(baud_trigger),
+		.pixel_sent(tx_ready_in),
+		.tx_alert(uart_valid_out)
+    );
 	 
 endmodule 
