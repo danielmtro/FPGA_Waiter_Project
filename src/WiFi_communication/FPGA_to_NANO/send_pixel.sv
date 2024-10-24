@@ -19,7 +19,7 @@ module send_pixel(
 	logic uart_valid_out;
 	logic uart_valid_in;
 	
-	localparam CLKS_PER_BIT = (50000000/115200);
+	localparam CLKS_PER_BIT = (50000000/9600);
 	
 	uart_tx #(
         .CLKS_PER_BIT(CLKS_PER_BIT),

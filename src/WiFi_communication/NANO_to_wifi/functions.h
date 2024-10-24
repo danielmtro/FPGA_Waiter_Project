@@ -19,4 +19,6 @@ void connectToWiFi(const char* ssid, const char* password);
  * @return pixel as a uint16_t
  */
 uint16_t receive_pixel();
+
+void serialFlush();
 #endif

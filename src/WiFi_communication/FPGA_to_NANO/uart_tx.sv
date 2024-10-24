@@ -1,5 +1,5 @@
  module uart_tx #(
-      parameter CLKS_PER_BIT = (50000000/115200), // E.g. Baud_rate = 115200 with FPGA clk = 50MHz
+      parameter CLKS_PER_BIT = (50000000/9600), // E.g. Baud_rate = 115200 with FPGA clk = 50MHz
       parameter BITS_N       = 8, // Number of data bits per UART frame
       parameter PARITY_TYPE  = 0  // 0 for none, 1 for odd parity, 2 for even.
 ) (
@@ -33,11 +33,11 @@
 	logic [7:0] hold_counter;
 	
 	always_ff @(posedge baud_trigger) begin
-		hold_counter <= (hold_counter == 8'b00000101) ? 0 : (current_state != HOLD_BAY) ? 0 : hold_counter + 1;
+		hold_counter <= (hold_counter == 8'b11111111) ? 0 : (current_state != HOLD_BAY) ? 0 : hold_counter + 1;
 	end
 	
 	logic hold_trigger;
-	assign hold_trigger = (hold_counter == 8'b00000101);
+	assign hold_trigger = (hold_counter == 8'b11111111);
 	
 
    always_comb begin : fsm_next_state

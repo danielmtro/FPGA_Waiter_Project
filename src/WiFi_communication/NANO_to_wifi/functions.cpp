@@ -38,3 +38,9 @@ uint16_t receive_pixel(){
     return pixel;
 
 }
+
+void serialFlush(){
+  while(Serial1.available() > 0) {
+    char t = Serial1.read();
+  }
+}

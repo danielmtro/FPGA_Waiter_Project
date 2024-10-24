@@ -13,7 +13,7 @@ WiFiServer server(80);
 
 void setup() {
   // Communication between Arduino and Serial monitor in IDE
-  Serial.begin(115200);  
+  Serial.begin(9600);  
 
   //Setup communication from arduino to WIFI
   // Start the server
@@ -23,11 +23,14 @@ void setup() {
   
   //communication between FPGA and arduino
   //Note: we cannot use Serial1.write because the FPGA doesn't have UART_RX
-  Serial1.begin(115200, SERIAL_8N1); //communication between FPGA and arduino
+  Serial1.begin(9600, SERIAL_8N1); //communication between FPGA and arduino
 
   //declare READY_OUT as output pin
   pinMode(READY_OUT, OUTPUT); 
   digitalWrite(READY_OUT, LOW);
+
+  //flush Serial1
+  serialFlush();
 }
 
 
@@ -57,14 +60,25 @@ void loop() {
         //remove everything from the incoming buffer from the FPGA
         //buffer size is only 256 bytes which is half as many pixels
         if (request == "F"){
-          Serial1.flush();
+          serialFlush();
         }
 
         //read 1 pixel off the Serial1 buffer and send it over WiFi
         else if (request == "S"){
-            digitalWrite(READY_OUT, HIGH);
-            if(Serial1.available() >= 2){              
+
+            if (Serial1.available() == 0){
+              digitalWrite(READY_OUT, HIGH);
+            }
+            else {
+              digitalWrite(READY_OUT, LOW);
+            }
+            
+            if(Serial1.available() >= 2){   
+              Serial.print("Serial 1 buffer: ");
+              Serial.println(Serial1.available());    
+
               pixel = receive_pixel();
+
               //send pixel over WiFi
               //NOTE: this is the slow part
               //TODO: Can you please sanity the high byte send? 
@@ -78,8 +92,14 @@ void loop() {
     }
     digitalWrite(READY_OUT, LOW);
     Serial.println("Dropping client");
-    client.stop();
+    Serial1.flush();
+    client.stop(); 
+    Serial.println("--------------------------------------------------------------------------------------------------------");
+    Serial.println("--------------------------------------------------------------------------------------------------------");
+    Serial.println("--------------------------------------------------------------------------------------------------------");
+    Serial.println("--------------------------------------------------------------------------------------------------------");
   }
+  serialFlush();
 }
 
 

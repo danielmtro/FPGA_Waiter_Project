@@ -9,7 +9,7 @@ SERVER_IP = '10.70.139.190'
 PORT = 80
 
 #number of pixels to expect in image
-num_pixels = 100
+num_pixels = 2500
 
 """
 @brief this function receives an image from WiFi after a connection is made
@@ -45,9 +45,27 @@ def receive_image():
     while len(image) < num_pixels * 2:
 
         if (len(image) == 0):
+            s.sendall(B'F\n')
             input ("are you ready to receive?")
             s.sendall(B"S\n")
+            s.sendall(B'F\n')
             time.sleep(0.1)
+            s.sendall(B'F\n')
+            s.sendall(B"S\n")
+            time.sleep(0.1)
+            s.sendall(B"S\n")
+            time.sleep(0.1)
+            s.sendall(B"S\n")
+            time.sleep(0.1)
+            s.sendall(B"S\n")
+            time.sleep(0.1)
+            s.sendall(B"S\n")
+            time.sleep(0.1)
+            s.sendall(B"S\n")
+            time.sleep(0.1)
+            s.sendall(B"S\n")
+            time.sleep(0.1)
+            s.sendall(B"S\n")
         
         # collect one pixel from WiFi
         data= request_receive(s)
@@ -83,7 +101,7 @@ def reconstruct_image(pixel_data):
     
     #declare image dimension
     # NOTE should be changed to the appropriate dimensions e.g. 10x10 or 320x240
-    img = Image.new('RGB', (10, 10))
+    img = Image.new('RGB', (50, 50))
     for i in range(num_pixels):
         pixel_value = (pixel_data[2 * i] << 4) | pixel_data[2 * i + 1]
 
@@ -94,7 +112,7 @@ def reconstruct_image(pixel_data):
 
         # Place pixels in image
         # NOTE both these values should be the image width e.g. 10, or 320
-        img.putpixel((i % 10, i // 10), (r << 4, g << 4, b << 4))
+        img.putpixel((i % 50, i // 50), (r << 4, g << 4, b << 4))
     img.show()
 
 
@@ -111,7 +129,7 @@ def request_receive(open_socket):
     if readable:
 
         # read 1 byte and check if it is good and valid
-        data = open_socket.recv(1)
+        data = open_socket.recv(10)
         if data:
             return data
 
