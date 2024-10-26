@@ -62,6 +62,9 @@ module top_level(
 	--------------------------------
 	*/
 
+	logic valid;
+	assign valid = 1'b1;
+
 	
 	/*
 	--------------------------------
@@ -76,35 +79,69 @@ module top_level(
 	--------------------------------
 	--------------------------------
 	*/
+	wire btn_resend;
+	assign btn_resend = SW[0];
 	
-	
-	logic vga_ready, sop, eop;
-	logic [16:0] rdaddress;
-	logic [11:0] rddata;
+	wire clk_50_camera;
 	wire clk_25_vga;
+	wire wren;
+	wire resend;
+	wire nBlank;
+	wire vSync;
+	wire [16:0] wraddress;
+	wire [11:0] wrdata;
+	logic [16:0] rdaddress;
+	wire [11:0] rddata;
+  	logic [11:0] vga_data;
+	wire [7:0] red; wire [7:0] green; wire [7:0] blue;
+	wire activeArea;
+
+  my_altpll Inst_vga_pll(
+      .inclk0(clk_50),
+    .c0(clk_50_camera),
+    .c1(clk_25_vga));
+
+  assign resend =  ~btn_resend;
+
+  ov7670_controller Inst_ov7670_controller(
+      .clk(clk_50_camera),
+    .resend(resend),
+    .config_finished(led_config_finished),
+    .sioc(ov7670_sioc),
+    .siod(ov7670_siod),
+    .reset(ov7670_reset),
+    .pwdn(ov7670_pwdn),
+    .xclk(ov7670_xclk));
+
+  ov7670_capture Inst_ov7670_capture(
+      .pclk(ov7670_pclk),
+    .vsync(ov7670_vsync),
+    .href(ov7670_href),
+    .d(ov7670_data),
+    .addr(wraddress),
+    .dout(wrdata),
+    .we(wren));
 	
-	camera_generation_top cgt0 (
-	
-	// Camera Inputs and Outputs
-	.ov7670_pclk(ov7670_pclk),
-	.ov7670_xclk(ov7670_xclk),
-	.ov7670_vsync(ov7670_vsync),
-	.ov7670_href(ov7670_href),
-	.ov7670_data(ov7670_data),
-	.ov7670_sioc(ov7670_sioc),
-	.ov7670_siod(ov7670_siod),
-	.ov7670_pwdn(ov7670_pwdn),
-	.ov7670_reset(ov7670_reset),
-	
-	.clk_50(clk_50),
-	.SW(SW),	// switches taken as inputs	
-	.ready(vga_ready), // ready comes from vga or its high - create selection
-	.sop(sop),
-	.eop(eop),
-	.pixel(rddata),
-	.address(rdaddress),
-	.clk_25_vga(clk_25_vga)
-);
+  frame_buffer Inst_frame_buffer(
+    .rdaddress(rdaddress),
+    .rdclock(clk_25_vga),
+    .q(rddata),
+    .wrclock(ov7670_pclk),
+    .wraddress(wraddress[16:0]),
+    .data(wrdata),
+    .wren(wren));
+
+  reg vga_ready, sop, eop;  
+
+  // create address generator
+  address_generator ag0(
+    .clk_25_vga(clk_25_vga),
+    .resend(resend),
+    .vga_ready(vga_ready),
+    .vga_start_out(sop),
+    .vga_end_out(eop),
+    .rdaddress(rdaddress)
+  );
 	 
 
   logic [11:0] colour_data;
