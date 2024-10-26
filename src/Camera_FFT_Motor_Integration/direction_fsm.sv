@@ -4,18 +4,24 @@ module direction_fsm #(
 )(
     input           		  clk,
 	 input logic [9:0] frequency_input, // frequency input
-    input logic [7:0] distance, // ultrasonic input
 	 input logic [4:0] threshold_frequency,
+	
+    input logic [7:0] distance, // ultrasonic input
+	 input logic [16:0] red_pixels,
+	 input logic [16:0] threshold_pixels,
+	 
     output [2:0] direction
 );
-
+	
+	 logic red_stop_signal;
+	 assign red_stop_signal = (red_pixels > threshold_pixels);
+	 
 	 // add a delay to the distance calculation
 	 
 	// create a distance shift register
 	logic [7:0] distances [1:0];
+	
 	logic too_close;
-	
-	
 	always_ff @(posedge clk) begin
 		
 		// process through shift register
@@ -36,6 +42,30 @@ module direction_fsm #(
 		end
 	end
 	
+	
+	// create a shift register for the different microphone input values
+	logic [9:0] mic_inputs [3:0];
+	logic threshold_reached;
+	
+	// shift the values through the register
+	always_ff @(posedge clk) begin
+		if(frequency_input != frequency_input[0]) begin
+			mic_inputs[3] <= mic_inputs[2];
+			mic_inputs[2] <= mic_inputs[1];
+			mic_inputs[1] <= mic_inputs[0];
+			mic_inputs[0] <= frequency_input;
+		end
+	end
+	
+	// determine the thresholding reached status
+	always_comb begin
+		
+		threshold_reached = (mic_inputs[0] >= threshold_frequency) &
+								  (mic_inputs[1] >= threshold_frequency) &
+								  (mic_inputs[2] >= threshold_frequency) &
+								  (mic_inputs[3] >= threshold_frequency);
+	end
+	
 
     // State typedef enum used here
 	 // Note that we specify the exact encoding that we want to use for each state
@@ -47,15 +77,15 @@ module direction_fsm #(
         STOP = 3'b100
     } state_type;
 
-    // create a two second delay that can be used to prevent the robot 
+    // create a 1 second delay that can be used to prevent the robot 
     // from  instantly changing directions
     integer i = 0;
-    localparam TIME_FOR_2s = 100000000;
+    localparam TIME_FOR_1s = 50000000;
     always_ff @(posedge clk) begin
         if(current_state != FORWARDS && current_state != BACKWARDS) begin
             i <= 0;
         end
-        else if (i < TIME_FOR_2s) begin 
+        else if (i < TIME_FOR_1s) begin 
             i <= i + 1;
         end
     end
@@ -68,22 +98,22 @@ module direction_fsm #(
 			
 		  case(current_state)
             IDLE_BASE : begin
-                if(frequency_input > threshold_frequency) begin
+                if(threshold_reached) begin
                     next_state = FORWARDS;
                 end
             end
             IDLE_TABLE : begin
-                if(frequency_input > threshold_frequency) begin
+                if(threshold_reached) begin
                     next_state = BACKWARDS;
                 end
             end
             FORWARDS : begin
-                if(too_close && i >= TIME_FOR_2s) begin // corresponds to two seconds at 50MHz
+                if((too_close && i >= TIME_FOR_1s) || (red_stop_signal)) begin // corresponds to two seconds at 50MHz
                     next_state = IDLE_TABLE;
                 end
             end
             BACKWARDS : begin
-                if(too_close && i >= TIME_FOR_2s) begin
+                if(too_close && i >= TIME_FOR_1s) begin
                     next_state = IDLE_BASE;
                 end
             end

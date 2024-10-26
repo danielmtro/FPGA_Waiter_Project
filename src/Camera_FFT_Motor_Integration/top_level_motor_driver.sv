@@ -115,23 +115,14 @@ module top_level_motor_driver (
     .display1(HEX7)
 	);
 
-//									
-//	logic [2:0] fft_speed;
-//	logic [2:0] speed;
-//	assign fft_speed = mic_freq[2:0];
-//	assign speed = fft_speed + 1; // increase fft speed by one so we aren't stationary
-	
 	// visualise pitch output
 	display u_display (.clk(CLOCK_50),.value(mic_freq),.display0(HEX0),.display1(HEX1),.display2(HEX2),.display3(HEX3));
 
 	
-	//
-	//
-	//
+	//------------------------
 	// MOTOR CONTROLCODE BELOW
-	//
-	//
-	//
+	//------------------------
+	
 	
 	// create a reset pulser
 	logic reset_ultra;
@@ -165,23 +156,20 @@ module top_level_motor_driver (
 	
 	// DISPLAY THE THRESHOLDED FREQUENCY
 
-//	display tv_disp (.clk(CLOCK_50),
-//						  .value(tval),
-//						  .display0(HEX4),
-//						  .display1(HEX5),
-//						  .display2(HEX6),
-//						  .display3(HEX7));
 
 	// start up the directional state machine
 	
-	
 	// state machine for high level logic
+	logic [16:0] red_pixel_threshold;
+	assign red_pixel_threshold = 17'b01000000000000000;
 	direction_fsm #(.TOO_CLOSE(8'd20)) dfsm (
 		.clk(CLOCK_50),
 		.frequency_input(mic_freq),
 		.distance(distance),
 		.threshold_frequency(tval),
-		.direction(direction)
+		.direction(direction),
+		.red_pixels(red_pixels),
+		.threshold_pixels(red_pixel_threshold)
 	);
 	
 	
@@ -194,8 +182,7 @@ module top_level_motor_driver (
 		.threshold_frequency(tval),
 		.speed(speed)
 	);
-	
-//	assign LEDR[2:0]  = speed;
+
 	
 	// actual motor control
 	logic uart_out;
@@ -207,11 +194,6 @@ module top_level_motor_driver (
 	);
 	
 	assign GPIO[5] = uart_out;
-	
-	// view the current state
-//	assign LEDR[17] = direction[2];
-//	assign LEDR[16] = direction[1];
-//	assign LEDR[15] = direction[0];
 	
 	
 	/*
@@ -279,7 +261,7 @@ module top_level_motor_driver (
 
   // choose what data we are using
   logic decision;
-  assign decision = SW[1];
+  assign decision = SW[2];
   logic [11:0] display_data;
   
   assign display_data = (decision) ? colour_data : rddata;
