@@ -16,6 +16,7 @@ num_pixels = 2500
 """
 def receive_image():
     
+    # connect to wifi
     while True:
         try:
             #open a connection with the Arduino
@@ -47,24 +48,6 @@ def receive_image():
         if (len(image) == 0):
             s.sendall(B'F\n')
             input ("are you ready to receive?")
-            s.sendall(B"S\n")
-            s.sendall(B'F\n')
-            time.sleep(0.1)
-            s.sendall(B'F\n')
-            s.sendall(B"S\n")
-            time.sleep(0.1)
-            s.sendall(B"S\n")
-            time.sleep(0.1)
-            s.sendall(B"S\n")
-            time.sleep(0.1)
-            s.sendall(B"S\n")
-            time.sleep(0.1)
-            s.sendall(B"S\n")
-            time.sleep(0.1)
-            s.sendall(B"S\n")
-            time.sleep(0.1)
-            s.sendall(B"S\n")
-            time.sleep(0.1)
             s.sendall(B"S\n")
         
         # collect one pixel from WiFi
