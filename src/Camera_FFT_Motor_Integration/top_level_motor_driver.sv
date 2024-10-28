@@ -169,6 +169,8 @@ module top_level_motor_driver (
 		.threshold_frequency(tval),
 		.direction(direction),
 		.red_pixels(red_pixels),
+		.green_pixels(green_pixels),
+		.blue_pixels(blue_pixels),
 		.threshold_pixels(red_pixel_threshold)
 	);
 	
@@ -241,21 +243,50 @@ module top_level_motor_driver (
 	 
 
   logic [11:0] colour_data;
+  logic [11:0] red_out;
+  logic [11:0] green_out;
+  logic [11:0] blue_out;
   logic [3:0] upper_thresh;
   logic [16:0] red_pixels;
+  logic [16:0] green_pixels;
+  logic [16:0] blue_pixels;
   
   assign upper_thresh = 4'b1000; // can be changed to SW[5:2] for calibration
  
  // detects and outputs predominantly red pixels.
  // saves the number of pixels in red_pixels variable
-  colour_detect cd0(
+  colour_detect red_detect(
 	.clk(CLOCK_50),
 	.data_in(rddata),
 	.upper_thresh(upper_thresh),
 	.address(rdaddress),
-	.data_out(colour_data),
-	.red_pixels(red_pixels),
+	.data_out(red_out),
+	.colour(0),
+	.colour_pixels(red_pixels),
 	.sop(sop));
+	
+	// green colour detection
+	colour_detect green_detect(
+	.clk(CLOCK_50),
+	.data_in(rddata),
+	.upper_thresh(upper_thresh),
+	.address(rdaddress),
+	.data_out(green_data),
+	.colour(1),
+	.colour_pixels(green_pixels),
+	.sop(sop));
+	
+	// green colour detection
+	colour_detect blue_detect(
+	.clk(CLOCK_50),
+	.data_in(rddata),
+	.upper_thresh(upper_thresh),
+	.address(rdaddress),
+	.data_out(blue_data),
+	.colour(2),
+	.colour_pixels(blue_pixels),
+	.sop(sop));
+	
 	
 	assign LEDR[16:0] = red_pixels;
 
@@ -264,7 +295,7 @@ module top_level_motor_driver (
   assign decision = SW[2];
   logic [11:0] display_data;
   
-  assign display_data = (decision) ? colour_data : rddata;
+  assign display_data = (decision) ? red_out : rddata;
   
   // in case we want to interface with the vga
   vga_interface vgai0 (

@@ -1700,6 +1700,7 @@ set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_N[16] -entity top_l
 set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_N[16] -entity top_level
 set_instance_assignment -name IO_STANDARD LVDS -to HSMC_CLKOUT_N2 -entity top_level
 set_instance_assignment -name IO_STANDARD LVDS -to HSMC_CLKOUT_N1 -entity top_level
+set_global_assignment -name SYSTEMVERILOG_FILE colour_detect.sv
 set_global_assignment -name QIP_FILE ../vga_interface/synthesis/vga_interface.qip
 set_global_assignment -name VERILOG_FILE i2c_sender.v
 set_global_assignment -name SYSTEMVERILOG_FILE camera_generation_top.sv
