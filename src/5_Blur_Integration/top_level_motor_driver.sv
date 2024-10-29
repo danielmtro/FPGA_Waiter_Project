@@ -256,21 +256,21 @@ module top_level_motor_driver (
 	.data_out(colour_data),
 	.red_pixels(red_pixels),
 	.sop(sop));
+	
+	logic valid;
+   logic [11:0] blur_data;
+	
+	assign valid = 1'b1;
 
- // detects and outputs predominantly red pixels.
- // saves the number of pixels in red_pixels variable
-  blurring_filter blurring_filter(
-	.clk(CLOCK_50),
-	.ready_in(ready_in),
-	.valid_in(valid_in),
-	.startofpacket_in(startofpacket_in),
-	.endofpacket_in(endofpacket_in),
-	.data_in(data_in),
-	.ready_in(ready_out),
-	.valid_in(valid_out),
-	.startofpacket_in(startofpacket_out),
-	.endofpacket_in(endofpacket_out),
-	.data_out(data_out));
+ // blurs only the face
+  blurring_filter blurring_face(
+	.clk(clk_25_vga),
+	.ready(vga_ready),
+	.valid(valid),
+	.startofpacket_in(sop),
+	.endofpacket_in(eop),
+	.data_in(rddata),
+	.data_out(blur_data));
 	
   assign LEDR[16:0] = red_pixels;
 
@@ -279,7 +279,7 @@ module top_level_motor_driver (
   assign decision = SW[2];
   logic [11:0] display_data;
   
-  assign display_data = (decision) ? colour_data : rddata;
+  assign display_data = (decision) ? blur_data : rddata;
   
   // in case we want to interface with the vga
   vga_interface vgai0 (
