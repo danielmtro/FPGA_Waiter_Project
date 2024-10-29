@@ -35,6 +35,10 @@ void setup() {
   
 }
 
+/*
+Deprecated function - not really used anymore because
+you're not meant to read serial as 16 bits
+*/
 uint16_t read_pixel()
 {
   uint16_t high_byte = Serial1.read();  // First byte (high byte)
@@ -82,25 +86,20 @@ void loop()
   while(client.connected())
   {
     waitForSOP();
+    startTime = millis();
 
     while(pixel_count < expected_pixels)
     {   
         if(Serial1.available() >= 2)
         {   
-            if(pixel_count  == 0)
-            startTime = millis();
-
-            // extract the bytes from the bufffer
-            uint16_t pixel = read_pixel();
-
             // // print out the pixel data that has been received
             Serial.print("Pixel number ");
-            Serial.print(pixel_count);
-            // Serial.print(": ");
-            // Serial.println(pixel, HEX);  // Print the pixel data in HEX format
+            Serial.println(pixel_count);
 
-            client.write((uint8_t)(pixel >> 4));  // Send high byte
-            client.write((uint8_t)(pixel & 0xFF)); // Send low byte
+            uint8_t high_byte = Serial1.read();  // First byte (high byte)
+            uint8_t low_byte = Serial1.read();   // Second byte (low byte)
+            client.write(high_byte);  // Send high byte
+            client.write(low_byte); // Send low byte
             pixel_count = pixel_count + 1;
         }
     }

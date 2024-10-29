@@ -77,6 +77,8 @@ def reconstruct_image(pixel_data):
         # Place pixels in image
         # NOTE both these values should be the image width e.g. 10, or 320
         img.putpixel((i % IMAGE_WIDTH, i // IMAGE_WIDTH), (r << 4, g << 4, b << 4))
+
+    
     img.show()
 
 

@@ -85,7 +85,7 @@ module top_level(
 	  // time_delay should correspond to the clock cycles 
 	  // that should be waited after each pixel has been sent
     image_sender #(.NUM_PIXELS(num_pixels),
-						 .TIME_DELAY(49000),
+						 .TIME_DELAY(52000),
 						 .BAUD_RATE(115200)) is0 (
         .clk(CLOCK_50),
         .rst(edge_detect_keys[0]),
