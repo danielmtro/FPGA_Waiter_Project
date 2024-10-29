@@ -12,7 +12,7 @@ module direction_fsm #(
 	 input logic [16:0] blue_pixels,
 	 input logic [16:0] threshold_pixels,
 	 
-    output [2:0] direction
+    output [3:0] direction
 );
 	
 	// declare and assign flags for red and green sightings
