@@ -55,7 +55,7 @@ module drive_motor(
 		 .ready()
 	);
 	
-	turn_right_back back (
+	turn_right_back back_right (
 		 .clk(CLOCK_50),
 		 .speed(speed),
 		 .rst(b_rst),
