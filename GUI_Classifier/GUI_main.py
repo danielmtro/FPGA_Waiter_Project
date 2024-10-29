@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QTimer, QTime, Qt, QSize
-from PyQt5.QtGui import QPixmap, QFont
+from PyQt5.QtGui import QPixmap, QFont, QImage
 import sys
 import pyqtgraph as pg
 from PyQt5.QtWidgets import *
@@ -8,6 +8,8 @@ from random import randint
 import serial
 import cv2
 import requests
+import numpy as np
+from PIL import Image
 
 import classifier_deepface
 
@@ -18,18 +20,35 @@ import classifier_deepface
 
 # Connect Arduino to computer, update Arduino IP
 
+from PyQt5.QtCore import QTimer, QTime, Qt, QSize
+from PyQt5.QtGui import QPixmap, QFont
+import sys
+import pyqtgraph as pg
+from PyQt5.QtWidgets import *
+from PyQt5 import QtCore
+from random import randint
+import serial
+
+spiceLevel = 0
+
 class mainWindow(QWidget):
     def __init__(self):
         super().__init__()
+        #######################################################
         # Initialise layouts
+
+        # Display: current speed, current direction, current position, last floor, next floor, weight
+        # Input: speed, floor, emergency stop
         mainWindow = QVBoxLayout()
         menuBar = QGridLayout()
         graphicsArea = QGridLayout()
 
-        # Layout Structure
+        #######################################################
+        # Nested Layout Structure
         mainWindow.addLayout(graphicsArea)
         mainWindow.addLayout(menuBar)
         
+        #######################################################
         # Layout Specifics and Styling
         graphicRows = 3
         graphicCols = 4
@@ -38,6 +57,7 @@ class mainWindow(QWidget):
         rect = screen.availableGeometry()
 
         availableHeight = rect.height()
+
         graphicsRowsHeight = int(int(availableHeight)/graphicRows)
 
         # Fonts
@@ -62,6 +82,7 @@ class mainWindow(QWidget):
         menuFont = QFont()
         menuFont.setPointSize(10)
 
+        ######################################################################################################################################
         # Create features
 
         """
@@ -73,133 +94,141 @@ class mainWindow(QWidget):
 
         """
 
+        ######################################################################################################################################
+        # Buttons
+
         # Menu Bar buttons
         self.orderButton = QPushButton(text="ORDER", parent=self)
         self.orderButton.setFixedSize(400, 110)
         self.orderButton.clicked.connect(self.orderButtonClicked)
         self.orderButton.setFont(menuFont)
 
+        #######################################################
         # Flag Init
+
+        # textEdit
         self.flag_text = 0
         self.spiceLevel = 0
-        self.image_flag = 0
         self.display_image_flag = 0
-        self.order_flag = 0
+
+        #######################################################
+        # Timer
 
         # creating a timer object
         timer = QTimer(self)
-        timer.timeout.connect(self.check_interrupt)
-        timer.start(500)
+ 
+        timer.timeout.connect(self.updateDisplay)
 
+        # update sensors every 0.5 second
+        timer.start(250)
+
+        #######################################################
         # Set grid layout dimensions
 
         for i in range(4):
             graphicsArea.setColumnMinimumWidth(i,graphicsRowsHeight)
             graphicsArea.setColumnStretch(i,0)
+
         graphicsArea.setHorizontalSpacing(0)
 
         for j in range(3):
             graphicsArea.setRowMinimumHeight(j,graphicsRowsHeight)
             graphicsArea.setRowStretch(j,0)
+
         graphicsArea.setVerticalSpacing(0)
 
         for i in range(4):
             menuBar.setColumnMinimumWidth(i,graphicsRowsHeight)
             menuBar.setColumnStretch(i,0)
+
         menuBar.setHorizontalSpacing(0)
 
         for j in range(1):
             menuBar.setRowMinimumHeight(j,int(graphicsRowsHeight/2))
             menuBar.setRowStretch(j,0)
+
         menuBar.setVerticalSpacing(0)
 
+        #######################################################
         # Layout - Widgets
+
+        # Update layout to include QLabel overlays for images
+                # Update layout to include QLabel overlays for images
         self.spiceWidget = QFrame()
+        self.spiceWidget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # Allow QFrame to expand
+        self.spiceLayout = QVBoxLayout(self.spiceWidget)  # Add a layout inside the QFrame
+        self.spiceImageLabel = QLabel(self.spiceWidget)  # Create QLabel
+        self.spiceImageLabel.setScaledContents(True)  # Scale the pixmap to fill QLabel
+        self.spiceImageLabel.setAlignment(Qt.AlignCenter)  # Center the QLabel content
+        self.spiceLayout.addWidget(self.spiceImageLabel)  # Add QLabel to QFrame layout
+        self.spiceLayout.setContentsMargins(0, 0, 0, 0)  # Remove margins
+
         self.faceWidget = QFrame()
+        self.faceWidget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # Allow QFrame to expand
+        self.faceLayout = QVBoxLayout(self.faceWidget)  # Add a layout inside the QFrame
+        self.faceImageLabel = QLabel(self.faceWidget)  # Create QLabel
+        self.faceImageLabel.setScaledContents(True)  # Scale the pixmap to fill QLabel
+        self.faceImageLabel.setAlignment(Qt.AlignCenter)  # Center the QLabel content
+        self.faceLayout.addWidget(self.faceImageLabel)  # Add QLabel to QFrame layout
+        self.faceLayout.setContentsMargins(0, 0, 0, 0)  # Remove margins
+
+        # Apply stylesheet for formatting
+        self.faceWidget.setStyleSheet("QFrame {border: 2px solid black; border-radius: 10px;}")
+        self.spiceWidget.setStyleSheet("QFrame {border: 2px solid red; border-radius: 10px;}")
 
         # Menu Bar
-        # Set the background color of the main window to dark grey
-        # Set the faceWidget to have a transparent background
         menuBar.addWidget(self.orderButton, 0, 1, 1, 2, Qt.AlignHCenter)   
         graphicsArea.addWidget(self.faceWidget, 0, 0, 3, 4)
         graphicsArea.addWidget(self.spiceWidget, 0, 0, 3, 4)
         self.setLayout(mainWindow)
-        
-        # Set up Arduino Wifi connection
-        self.arduino_ip = 'http://<arduino_ip_address>'
-        self.url = f'{self.arduino_ip}/'
+
+    def pil_to_qpixmap(self, image):
+        image = image.convert("RGBA")  # Convert to RGBA for PyQt compatibility
+        data = image.tobytes("raw", "RGBA")
+        qimage = QImage(data, image.width, image.height, QImage.Format_RGBA8888)
+        return QPixmap.fromImage(qimage)
 
     def updateDisplay(self):
-        # Select image to display from 
+        # Set dynamic image on the face image label
         if self.display_image_flag == 1:
-            image = "images/chad_small.jpg"
+            image = Image.open("images/chad_small.jpg")
+            pixmap = self.pil_to_qpixmap(image)
+            self.faceImageLabel.setPixmap(pixmap)
         else:
-            image = "images/init.png"
+            pixmap = QPixmap("images/init.png")
+            self.faceImageLabel.setPixmap(pixmap)
 
-        self.faceWidget.setStyleSheet(
-            f"""QFrame {{border-image: url({image}) 0 0 0 0 stretch;}}""")
-
+        # Set dynamic image on the spice image label
         if self.display_image_flag == 1:
             if self.spiceLevel == 0:
-                self.spiceWidget.setStyleSheet(
-                    """QFrame {border-image: url("images/MildSpice.png") 0 0 0 0 fit fit;}""")
+                self.spiceImageLabel.setPixmap(QPixmap("images/MildSpice.png"))
             elif self.spiceLevel == 1:
-                self.spiceWidget.setStyleSheet(
-                    """QFrame {border-image: url("images/MedSpice.png") 0 0 0 0 fit fit;}""")
+                self.spiceImageLabel.setPixmap(QPixmap("images/MedSpice.png"))
             elif self.spiceLevel == 2:
-                self.spiceWidget.setStyleSheet(
-                    """QFrame {border-image: url("images/HotSpice.png") 0 0 0 0 fit fit;}""")
+                self.spiceImageLabel.setPixmap(QPixmap("images/HotSpice.png"))
         else:
-            self.spiceWidget.setStyleSheet(
-                """QFrame {border-image: url("images/NoSpice.png") 0 0 0 0 fit fit;}""")
+            self.spiceImageLabel.setPixmap(QPixmap("images/NoSpice.png"))
 
     def orderButtonClicked(self):
-        # Send order command to FPGA
-        self.sendData(0, 0, 1)
+        self.spiceLevel = self.spiceLevel + 1
+        self.display_image_flag = 1
 
-    def imageReceived(self):
-        # Set image received flag high
-        self.image_flag = 1
-        img =  cv2.imread("images\\chad_small.jpg") # Load image from agreed location
-
-        prediction = classifier_deepface.classify_face(img)
-
-        if (prediction['dominant_race'] == 'white'):
+        if self.spiceLevel >= 3:
             self.spiceLevel = 0
-        elif (prediction['dominant_race'] == 'black' or prediction['dominant_race'] == 'middle eastern' or prediction['dominant_race'] == 'latino hispanic'):
-            self.spiceLevel = 1
-        elif (prediction['dominant_race'] == 'asian' or prediction['dominant_race'] == 'indian'):
-            self.spiceLevel = 2
-
-        self.sendData(prediction['age'], prediction['dominant_emotion'], 0)     
-        self.image_flag = 0   
-
-    def check_interrupt(self):
-        try:
-            response = requests.get(self.arduino_ip)
-            if response.status_code == 200:
-                message = response.text.strip()
-                # If image received for analysis
-                if "Analyse Image Sent" in message:
-                    if self.image_flag == 0:
-                        self.imageReceived()
-                # If image received for display
-                elif "Display Image Sent" in message:
-                    self.order_flag = 0 # Allow table to order again
-                    self.updateDisplay()
-        except requests.exceptions.RequestException as e:
-            print(f"Error: {e}")
-
-    def sendData(self, age, emotion, order):
-        msg = [age, emotion, order]
-        # Send the message via a GET request
-        response = requests.get(self.url, params={'message': msg})
-
-        # Print the response from the Arduino
-        print(response.text)
+        
+        print(self.spiceLevel)
+        #ser.write(bytes('E', 'UTF-8'))
+           
 
 if __name__ == "__main__":
     import sys
+
+    # Init Values
+    
+    spiceLevel = 0
+
+    #ser = serial.Serial('COM6',9600)
+
 
     app = QApplication(sys.argv)
     window = mainWindow()
