@@ -1,3 +1,8 @@
+/*
+State machine which tracks which way the robot is going
+straight, left, straight, stop, back, back_left, back, stop
+*/
+
 module direction_fsm #(
     parameter FREQUENCY = 13,
 	 parameter TOO_CLOSE = 8'd30
