@@ -145,7 +145,21 @@ module top_level_motor_driver (
 	);
 	
 	// variables for handling drive control commands
-	logic [2:0] direction;
+	logic [3:0] direction;
+	
+	/*
+	For reference: direction is an enum:
+		IDLE_BASE, 	0	0000
+      FORWARDS,	1	0001
+		TURN,			2	0010
+		TO_TABLE,	3	0011
+      IDLE_TABLE,	4	0100
+      BACKWARDS,	5	0101
+		TURN_BACK,	6	0110
+		RETURN_HOME,7	0111
+      STOP			8	1000
+	
+	*/
 	
 	
 	// THRESHOLD FREQUENCY ON SW[8:4]
@@ -167,7 +181,7 @@ module top_level_motor_driver (
 		.frequency_input(mic_freq),
 		.distance(distance),
 		.threshold_frequency(tval),
-		.direction(direction),
+		.direction(direction),	//direction output. refer to above
 		.red_pixels(red_pixels),
 		.green_pixels(green_pixels),
 		.blue_pixels(blue_pixels),
