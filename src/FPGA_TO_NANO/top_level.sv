@@ -42,7 +42,51 @@ module top_level(
     logic [16:0] address;
     logic image_ready;
     logic [11:0] pixel;
-    image_sender #(.NUM_PIXELS(3*3)) is0 (
+	 
+	 logic [11:0] start_pixel;
+	 assign start_pixel = 12'b000000001010;
+	 
+	 // create an image to send
+	 localparam num_pixels = 320 * 240;
+	 
+	 
+	 // -----------------------------------
+	// ----------	Team Flag INITIIALISATION
+	// -----------------------------------
+	 
+//    logic [11:0] image [num_pixels];
+//	 initial begin
+//		for (int i=0; i < num_pixels; i=i+1) begin
+//			image[i] = (i > 24 && i < 75) ? 12'b1111_0000_0000 : 12'b0000_0000_1111;
+//		end
+//	 end
+
+	
+	// -----------------------------------
+	// ----------	CHAD HO INITIIALISATION
+	// -----------------------------------
+
+	 (* ram_init_file = "chad-ho-320x240.mif" *)  logic [11:0]  image [0:num_pixels - 1];
+
+	 // determine what the output pixel will be
+	 logic [11:0]temp_pixel;
+	 always_ff @(posedge CLOCK_50) begin
+		temp_pixel <= image[address - 1];
+	 end
+
+	 always_ff @(posedge CLOCK_50) begin
+		pixel <= (address == 0) ? start_pixel : temp_pixel;
+	 end
+	 
+	 // --------------------------------------
+	 // ------------------- NO MORE CHAD HO
+	 // -----------------------------------
+ 	
+	  // time_delay should correspond to the clock cycles 
+	  // that should be waited after each pixel has been sent
+    image_sender #(.NUM_PIXELS(num_pixels),
+						 .TIME_DELAY(49000),
+						 .BAUD_RATE(115200)) is0 (
         .clk(CLOCK_50),
         .rst(edge_detect_keys[0]),
         .pixel(pixel),
@@ -51,14 +95,6 @@ module top_level(
         .image_ready(image_ready)
     );
 
-    // create an image to send
-    logic [11:0] image [9];
-	initial begin
-		for (int i=0; i < 9; i=i+1) begin
-			image[i] = (i > 2 && i < 6) ? 12'b1111_0000_0000 : 12'b0000_0000_1111;
-		end
-	end
-
-    assign pixel = image[address];
+    
 
 endmodule

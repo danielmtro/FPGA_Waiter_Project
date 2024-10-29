@@ -70,9 +70,9 @@ module pixel_sender #(
 			// if we are sending data get ready to move to the next
 			byte_index <= next_byte_index;
 		end
-    end
+    end 
 
     // Ready signal when all bytes have been sent, including the newline
-    assign ready = (next_byte_index == 2) && (uart_ready == 1'b1) && (uart_valid == 1'b0);  // Only ready after the last byte is fully sent
+    assign ready = (next_byte_index == 2) &&(uart_ready == 1'b1) && (uart_valid == 1'b0) && !(rst);  // Only ready after the last byte is fully sent
 
 endmodule
