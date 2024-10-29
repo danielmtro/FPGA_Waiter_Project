@@ -32,7 +32,7 @@ module backwards #(
         .ready(uart_ready)
     );
 
-    // Hard-coded 25-byte JSON message: {"T":11,"L":164,"R":164}\n
+    // Hard-coded 25-byte JSON message: {"T":1,"L":-0.5,"R":-0.5}\n
     logic [0:NUM_BYTES-1][7:0] json_data;
     initial begin
         json_data[0] = _OPEN_BRACE;
