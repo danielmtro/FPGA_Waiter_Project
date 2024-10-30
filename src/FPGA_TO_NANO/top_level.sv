@@ -43,11 +43,11 @@ module top_level(
     logic image_ready;
     logic [11:0] pixel;
 	 
-	 logic [11:0] start_pixel;
-	 assign start_pixel = 12'b000000001010;
-	 
-	 // create an image to send
-	 localparam num_pixels = 320 * 240;
+	logic [11:0] start_pixel;
+	assign start_pixel = 12'b000000001010;
+	
+	// create an image to send
+	localparam num_pixels = 320 * 240;
 	 
 	 
 	 // -----------------------------------
@@ -85,7 +85,7 @@ module top_level(
 	  // time_delay should correspond to the clock cycles 
 	  // that should be waited after each pixel has been sent
     image_sender #(.NUM_PIXELS(num_pixels),
-						 .TIME_DELAY(49000),
+						 .TIME_DELAY(50000),
 						 .BAUD_RATE(115200)) is0 (
         .clk(CLOCK_50),
         .rst(edge_detect_keys[0]),
@@ -94,7 +94,8 @@ module top_level(
         .uart_out(uart_out),
         .image_ready(image_ready)
     );
+	 
+	 assign LEDR[0] = image_ready;
 
-    
 
 endmodule
