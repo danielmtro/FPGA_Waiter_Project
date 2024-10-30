@@ -2,6 +2,7 @@ module image_sender #(
     parameter NUM_PIXELS = 320 * 240,
 	 parameter TIME_DELAY = 5000,
 	 parameter BAUD_RATE = 9600
+//	parameter BAUD_RATE = 11520000
 )(
     input clk,
     input rst,
@@ -18,15 +19,15 @@ module image_sender #(
     // create the ready flag
     assign image_ready = address == NUM_PIXELS;
 
-    pixel_index_generator #(
-        .NUM_PIXELS(NUM_PIXELS),
-		.TIME_DELAY(TIME_DELAY)
-    ) index_generator0 (
-        .clk(clk),
-        .rst(rst),
-        .pixel_send_ready(pixel_send_ready),
-        .address(address)
-    );
+//    pixel_index_generator #(
+//        .NUM_PIXELS(NUM_PIXELS),
+//		.TIME_DELAY(TIME_DELAY)
+//    ) index_generator0 (
+//        .clk(clk),
+//        .rst(rst),
+//        .pixel_send_ready(pixel_send_ready),
+//        .address(address)
+//    );
 
     small_image_pixel_index_generator #(
         .NUM_PIXELS(NUM_PIXELS),
