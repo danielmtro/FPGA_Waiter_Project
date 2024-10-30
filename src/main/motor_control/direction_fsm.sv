@@ -157,10 +157,10 @@ module direction_fsm #(
 					 end
             end
 				FORWARDS: begin
-					next_state = (blue_turn_signal) ? TURN : FORWARDS;
+					next_state = (red_stop_signal) ? TURN : FORWARDS;
 				end
 				TURN: begin
-					next_state = (green_turn_signal || counter == COUNTS) ? TO_TABLE : TURN;
+					next_state = (blue_turn_signal || counter == COUNTS) ? TO_TABLE : TURN;
 				end
             TO_TABLE : begin
                 if((too_close && i >= TIME_FOR_1s) || (red_stop_signal)) begin // corresponds to two seconds at 50MHz
@@ -174,13 +174,13 @@ module direction_fsm #(
 					next_state = (counter == COUNTS_1S) ? IDLE_TABLE : TO_FACE;
 				end
 				BACKWARDS: begin
-					next_state = green_turn_signal ? TURN_BACK : BACKWARDS;
+					next_state = blue_turn_signal ? TURN_BACK : BACKWARDS;
 				end
 				TURN_BACK: begin
-					next_state = (blue_turn_signal || counter == COUNTS) ? RETURN_HOME : TURN_BACK;
+					next_state = (red_stop_signal || counter == COUNTS) ? RETURN_HOME : TURN_BACK;
 				end
             RETURN_HOME : begin
-                if(too_close || red_stop_signal) begin
+                if(too_close) begin
                     next_state = IDLE_BASE;
                 end
 					 else begin
