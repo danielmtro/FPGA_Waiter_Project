@@ -5,8 +5,10 @@ from PIL import Image
 
 # IP address and port of the Arduino Nano 33 IoT
 # Replace with  Arduino's actual IP address
-SERVER_IP = '10.70.139.190'  
+# SERVER_IP = '10.70.139.190'  
 PORT = 80
+
+SERVER_IP = '10.42.0.97'
 
 #number of pixels to expect in image
 IMAGE_WIDTH = 320

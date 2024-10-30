@@ -1,17 +1,23 @@
-#include "functions.h"
 #include <WiFiNINA.h>
+#include "functions.h"
+
+int count_wait = 0;
 
 // variables for timing how long it takes images to send
 unsigned long startTime;
 unsigned long endTime;
 
-// variables for wifi connection
-const char* ssid = "KIRBYBOTS";      // Your Wi-Fi network SSID
-const char* password = "room330!";  // Your Wi-Fi network password
+// // variables for wifi connection
+// const char* ssid = "KIRBYBOTS";      // Your Wi-Fi network SSID
+// const char* password = "room330!";  // Your Wi-Fi network password
+
+// new version for wifi
+const char* ssid = "eb542147pi";      // Your Wi-Fi network SSID
+const char* password = "turtlebot";  // Your Wi-Fi network password
 
 // general variables to consider
 const int BAUD_RATE = 115200;
-const int expected_pixels = 320*240;
+const int expected_pixels = 320 * 240;
 int pixel_count = 0;
 bool finished_flush = false;
 
@@ -63,11 +69,21 @@ void waitForSOP()
         Serial.println("Starting Image Read");
         sop_not_found = false;
       }
+      else 
+      {
+        Serial.println("Another process taking place - needs reset.");
+
+        // clear the buffer
+        while(Serial1.available() > 0){uint8_t thing = Serial1.read();}
+      
+        Serial.println("Finished flushing the serial buffer");
+      }
     }
   }
   // exit function
   return;
 }
+
 
 void loop()
 {
@@ -76,7 +92,11 @@ void loop()
   bool finding_client = true;
   while(finding_client)
   {
+    count_wait++;
+    if(count_wait%1000000 == 0){Serial.println("Searching for client");}
+  
     WiFiClient client = server.available();
+
     if(client) {
       Serial.println("Client Connected");
       finding_client = false;
