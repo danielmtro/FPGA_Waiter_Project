@@ -262,40 +262,21 @@ module top_level_motor_driver (
   assign decision = SW[2];
   logic [11:0] display_data;
   
-  assign display_data = (decision) ? image_send_select_fsm_output : rddata;
+  assign display_data = (decision) ? blur_image : rddata;
   
-  // 10 sec delay
-  localparam TEN_SEC_DELAY = 500_000_000;
-  logic [28:0] delay_counter;
-  logic image_ready;
+  logic [11:0] blur_image;
 
-  always_ff @(posedge CLOCK_50) begin
-	delay_counter <= delay_counter + 1;
-	if (delay_counter == TEN_SEC_DELAY) begin
-		image_ready = 1'b1;
-	end
-	else begin
-		image_ready = 1'b0;
-	end
-  end
+  logic valid;
+  assign valid = 1'b1;
 
-  logic [11:0] image_send_select_fsm_output;
-  
-  localparam TABLE_STATE = 4'b0100;
-  localparam ONE_SECOND_DELAY = 50_000_000;
-
-  image_send_select #(
-	.WAIT_TIME(ONE_SECOND_DELAY),
-	.RESET_TIME(ONE_SECOND_DELAY),
-	.TABLE_STATE(TABLE_STATE)
-  ) iamge_send (
-	.clk(CLOCK_50),
-	.norm_in(rddata),
-	.blur_in(12'b0000_1111_0000),
-	.state(4'b0100),
-	.image_ready(image_ready),
-	.reset_signal(LEDR[17]),
-	.data_out(image_send_select_fsm_output)
+  blurring_filter blur_face (
+	.clk(clk_25_vga),
+	.ready(vga_ready),
+	.valid(valid),
+	.startofpacket_in(sop),
+	.endofpacket_in(eop),
+	.data_in(rddata),
+	.data_out(blur_image)
   );
 
   // in case we want to interface with the vga
