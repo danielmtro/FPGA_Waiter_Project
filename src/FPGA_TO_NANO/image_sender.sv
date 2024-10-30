@@ -19,6 +19,7 @@ module image_sender #(
     // create the ready flag
     assign image_ready = address == NUM_PIXELS;
 
+// To send full 320x240 image
 //    pixel_index_generator #(
 //        .NUM_PIXELS(NUM_PIXELS),
 //		.TIME_DELAY(TIME_DELAY)
