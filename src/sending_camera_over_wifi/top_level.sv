@@ -1,11 +1,9 @@
-module top_level_motor_driver (
+module top_level (
     input wire CLOCK_50,
     output [17:0] LEDR,
-	 output [7:0] LEDG,
     input wire [17:0]SW,
     input wire [3:0]KEY,
     inout wire [35:0]GPIO, // GPIO5
-	 input wire image_ready,
 
 	// 7seg outputs
 
@@ -85,138 +83,6 @@ module top_level_motor_driver (
 				);
 		end : edge_time
 	endgenerate  
-
-	// 
-	//
-	//
-	// FFT STUFF IS PRESENTED BELOW
-	//
-	//
-	//
-	
-	logic [9:0] mic_freq;
-	logic fft_reset;
-	assign fft_reset = ~SW[1]; //TODO change this to be image_ready
-	FFT_top_level FFT_TL(
-		.CLOCK_50(CLOCK_50),
-		.reset(fft_reset),
-		.I2C_SCLK(I2C_SCLK),
-		.I2C_SDAT(I2C_SDAT),
-		.AUD_ADCDAT(AUD_ADCDAT),
-		.AUD_BCLK(AUD_BCLK),
-		.AUD_XCK(AUD_XCK),
-		.AUD_ADCLRCK(AUD_ADCLRCK),
-		.mic_freq(mic_freq)
-	);
-	
-	// display threshold values on hex6 and hex7
-	display_2digit  d2d(
-    .clk(CLOCK_50),
-    .value(tval),
-    .display0(HEX6),
-    .display1(HEX7)
-	);
-
-	// visualise pitch output
-	display u_display (.clk(CLOCK_50),.value(mic_freq),.display0(HEX0),.display1(HEX1),.display2(HEX2),.display3(HEX3));
-
-	
-	//------------------------
-	// MOTOR CONTROLCODE BELOW
-	//------------------------
-	
-	
-	// create a reset pulser
-	logic reset_ultra;
-	reset_pulser rp0 (
-		.clock_50(CLOCK_50),
-		.rst(reset_ultra)
-	);
-	
-	// create sensor data
-	// print sensor data on the hexs 4 and 5
-	logic [7:0] distance;
-	top_level_distance_sensor tlds (
-		.CLOCK_50(CLOCK_50),
-		.GPIO(GPIO),
-		.enable(1'b1),
-		.reset(reset_ultra),
-		.ultrasonic_distance(distance),
-		.HEX4(HEX4),
-		.HEX5(HEX5)
-	);
-	
-	// variables for handling drive control commands
-	logic [3:0] direction;
-	
-	
-	/*
-	For reference: direction is an enum:
-		IDLE_BASE, 	0	0000
-      FORWARDS,	1	0001
-		TURN,			2	0010
-		TO_TABLE,	3	0011
-      IDLE_TABLE,	4	0100
-      BACKWARDS,	5	0101
-		TURN_BACK,	6	0110
-		RETURN_HOME,7	0111
-      STOP			8	1000
-	
-	*/
-	
-	assign LEDG = direction;
-	
-	
-	// THRESHOLD FREQUENCY ON SW[8:4]
-	// display the current threshold value
-	logic [4:0] tval;
-	assign tval = SW[17:13];
-	
-	
-	// DISPLAY THE THRESHOLDED FREQUENCY
-
-
-	// start up the directional state machine
-	
-	// state machine for high level logic
-	logic [16:0] red_pixel_threshold;
-	assign red_pixel_threshold = 17'b01000000000000000;
-	direction_fsm #(.TOO_CLOSE(8'd20)) dfsm (
-		.clk(CLOCK_50),
-		.frequency_input(mic_freq),
-		.distance(distance),
-		.reset(SW[6]),
-		.threshold_frequency(tval),
-		.direction(direction),	//direction output. refer to above
-		.red_pixels(red_pixels),
-		.green_pixels(green_pixels),
-		.blue_pixels(blue_pixels),
-		.threshold_pixels(red_pixel_threshold)
-	);
-	
-	
-	// speed control
-	logic [2:0] speed;
-	speed_fsm sfsm (
-		.CLOCK_50(CLOCK_50),
-		.direction(direction),
-		.mic_freq(mic_freq),
-		.threshold_frequency(tval),
-		.speed(speed)
-	);
-
-	
-	// actual motor control
-	logic uart_out;
-	drive_motor dm (
-		.CLOCK_50(CLOCK_50),
-		.direction(direction),
-		.speed(speed),
-		.uart_out(uart_out)
-	);
-	
-	assign GPIO[5] = uart_out;
-	
 	
 	/*
 	--------------------------------
@@ -236,11 +102,18 @@ module top_level_motor_driver (
 	logic vga_ready, sop, eop;
 	logic [16:0] rdaddress;
 	logic [11:0] rddata;
+	logic [11:0] red_pixels;
 	wire clk_25_vga;
 	
+
+	logic [11:0] temp_pixel;
+	logic write_enable;
+	assign write_enable = SW[3];
+
 	camera_generation_top cgt0 (
 	
 	// Camera Inputs and Outputs
+	.write_enable(write_enable),
 	.ov7670_pclk(ov7670_pclk),
 	.ov7670_xclk(ov7670_xclk),
 	.ov7670_vsync(ov7670_vsync),
@@ -258,88 +131,32 @@ module top_level_motor_driver (
 	.eop(eop),
 	.pixel(rddata),
 	.address(rdaddress),
-	.clk_25_vga(clk_25_vga)
-);
-	 
+	.clk_25_vga(clk_25_vga),
 
-  logic [11:0] colour_data;
-  logic [11:0] red_out;
-  logic [11:0] green_out;
-  logic [11:0] blue_out;
-  logic [3:0] upper_thresh;
-  logic [16:0] red_pixels;
-  logic [16:0] green_pixels;
-  logic [16:0] blue_pixels;
-  
-  /*
-  Red: 1000 
-  Blue: 
-  */
-  
-  assign upper_thresh = 4'b1000; // can be changed to SW[5:2] for calibration
+	// section to read from second frame buffer
+	.retrieve_address(equivalent_address),
+	.output_data(temp_pixel));
+
  
  // detects and outputs predominantly red pixels.
  // saves the number of pixels in red_pixels variable
-  colour_detect red_detect(
+  colour_detect cd0(
 	.clk(CLOCK_50),
 	.data_in(rddata),
 	.upper_thresh(upper_thresh),
 	.address(rdaddress),
-	.data_out(red_out),
-	.colour(0),
-	.colour_pixels(red_pixels),
+	.data_out(colour_data),
+	.red_pixels(red_pixels),
 	.sop(sop));
 	
-	// green colour detection
-	colour_detect green_detect(
-	.clk(CLOCK_50),
-	.data_in(rddata),
-	.upper_thresh(upper_thresh),
-	.address(rdaddress),
-	.data_out(green_out),
-	.colour(1),
-	.colour_pixels(green_pixels),
-	.sop(sop));
-	
-	// green colour detection
-	colour_detect blue_detect(
-	.clk(CLOCK_50),
-	.data_in(rddata),
-	.upper_thresh(upper_thresh),
-	.address(rdaddress),
-	.data_out(blue_out),
-	.colour(2),
-	.colour_pixels(blue_pixels),
-	.sop(sop));
-	
-	
-	assign LEDR[16:0] = blue_pixels;
-
+  assign LEDR[17:1] = red_pixels;
 
   // choose what data we are using
   logic decision;
   assign decision = SW[2];
   logic [11:0] display_data;
   
-  assign display_data = (decision) ? blue_out : rddata;
-
-  
-  localparam TABLE_STATE = 4'b0100;
-  localparam ONE_SECOND_DELAY = 50_000_000;
-
-  image_send_select #(
-	.WAIT_TIME(ONE_SECOND_DELAY),
-	.RESET_TIME(ONE_SECOND_DELAY),
-	.TABLE_STATE(TABLE_STATE)
-  ) iamge_send (
-	.clk(CLOCK_50),
-	.norm_in(rddata),
-	.blur_in(12'b0000_1111_0000),
-	.state(4'b0100),
-	.image_ready(image_ready),
-	.reset_signal(LEDR[17]),
-	.data_out(image_send_select_fsm_output)
-  );
+  assign display_data = (decision) ? colour_data : rddata;
 
   // in case we want to interface with the vga
   vga_interface vgai0 (
@@ -360,5 +177,39 @@ module top_level_motor_driver (
 		   .video_vga_controller_0_external_interface_B(vga_b)      //                                          .B
 	);
 
+	logic [16:0] address;
+	logic [11:0] pixel;
+
+	// stuff for sending over wifi
+	logic [11:0] start_pixel;
+	assign start_pixel = 12'b000000001010;
+	
+	// create an image to send
+	localparam num_pixels = 320 * 240;
+
+
+	// Convert to an equivalent pixel
+	logic equivalent_address;
+	assign equivalent_address = (address != 0) ? address - 1 : 0;
+
+	always_ff @(posedge CLOCK_50) begin
+		pixel <= (address == 0) ? start_pixel : temp_pixel;
+	end
+
+	logic image_uart;
+	assign GPIO[1] = image_uart;
+
+	image_sender #(.NUM_PIXELS(num_pixels),
+				   .TIME_DELAY(50000),
+				   .BAUD_RATE(115200),
+				   .CLOCK_SPEED(50_000_000)) is0 (
+        .clk(CLOCK_50),
+        .rst(edge_detect_keys[0]),
+        .pixel(pixel),
+        .address(address),
+        .uart_out(image_uart),
+        .image_ready(image_ready));
+
+	assign LEDR[0] = image_ready;
 
 endmodule
