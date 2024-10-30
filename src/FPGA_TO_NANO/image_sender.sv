@@ -19,8 +19,6 @@ module image_sender #(
     assign image_ready = address == NUM_PIXELS;
 
     pixel_index_generator #(
-        .COL_PIXELS(320),
-        .ROW_PIXELS(240),
         .NUM_PIXELS(NUM_PIXELS),
 		.TIME_DELAY(TIME_DELAY)
     ) index_generator0 (
