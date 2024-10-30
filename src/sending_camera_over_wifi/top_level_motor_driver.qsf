@@ -50,35 +50,6 @@ set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
-set_global_assignment -name QIP_FILE ../vga_interface/synthesis/vga_interface.qip
-set_global_assignment -name SYSTEMVERILOG_FILE uart_tx_tb.sv
-set_global_assignment -name SYSTEMVERILOG_FILE uart_tx.sv
-set_global_assignment -name SYSTEMVERILOG_FILE top_level.sv
-set_global_assignment -name SYSTEMVERILOG_FILE synchroniser.sv
-set_global_assignment -name SYSTEMVERILOG_FILE seven_seg.sv
-set_global_assignment -name SYSTEMVERILOG_FILE pixel_sender.sv
-set_global_assignment -name SYSTEMVERILOG_FILE pixel_index_generator.sv
-set_global_assignment -name VERILOG_FILE ov7670_registers.v
-set_global_assignment -name VERILOG_FILE ov7670_controller.v
-set_global_assignment -name VERILOG_FILE ov7670_capture.v
-set_global_assignment -name SYSTEMVERILOG_FILE nbit_synchroniser.sv
-set_global_assignment -name VERILOG_FILE my_frame_buffer_15to0.v
-set_global_assignment -name VERILOG_FILE my_altpll.v
-set_global_assignment -name SYSTEMVERILOG_FILE lcd_inst_pkg.sv
-set_global_assignment -name SYSTEMVERILOG_FILE image_sender.sv
-set_global_assignment -name VERILOG_FILE i2c_sender.v
-set_global_assignment -name VERILOG_FILE frame_buffer.v
-set_global_assignment -name SYSTEMVERILOG_FILE forward.sv
-set_global_assignment -name SYSTEMVERILOG_FILE FFT_top_level.sv
-set_global_assignment -name SYSTEMVERILOG_FILE edge_detect.sv
-set_global_assignment -name SYSTEMVERILOG_FILE drive_motor.sv
-set_global_assignment -name SYSTEMVERILOG_FILE display_2digit.sv
-set_global_assignment -name SYSTEMVERILOG_FILE display.sv
-set_global_assignment -name SYSTEMVERILOG_FILE debounce.sv
-set_global_assignment -name SYSTEMVERILOG_FILE colour_detect.sv
-set_global_assignment -name QIP_FILE clock_domain_fifo.qip
-set_global_assignment -name SYSTEMVERILOG_FILE camera_generation_top.sv
-set_global_assignment -name SYSTEMVERILOG_FILE address_generator.sv
 set_location_assignment PIN_D2 -to AUD_ADCDAT
 set_location_assignment PIN_C2 -to AUD_ADCLRCK
 set_location_assignment PIN_F2 -to AUD_BCLK
@@ -661,4 +632,33 @@ set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -entity top_level_moto
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -entity top_level_motor_driver -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -entity top_level_motor_driver -section_id Top
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -entity top_level_motor_driver -section_id Top
+set_global_assignment -name QIP_FILE ../vga_interface/synthesis/vga_interface.qip
+set_global_assignment -name SYSTEMVERILOG_FILE uart_tx_tb.sv
+set_global_assignment -name SYSTEMVERILOG_FILE uart_tx.sv
+set_global_assignment -name SYSTEMVERILOG_FILE top_level.sv
+set_global_assignment -name SYSTEMVERILOG_FILE synchroniser.sv
+set_global_assignment -name SYSTEMVERILOG_FILE seven_seg.sv
+set_global_assignment -name SYSTEMVERILOG_FILE pixel_sender.sv
+set_global_assignment -name SYSTEMVERILOG_FILE pixel_index_generator.sv
+set_global_assignment -name VERILOG_FILE ov7670_registers.v
+set_global_assignment -name VERILOG_FILE ov7670_controller.v
+set_global_assignment -name VERILOG_FILE ov7670_capture.v
+set_global_assignment -name SYSTEMVERILOG_FILE nbit_synchroniser.sv
+set_global_assignment -name VERILOG_FILE my_frame_buffer_15to0.v
+set_global_assignment -name VERILOG_FILE my_altpll.v
+set_global_assignment -name SYSTEMVERILOG_FILE lcd_inst_pkg.sv
+set_global_assignment -name SYSTEMVERILOG_FILE image_sender.sv
+set_global_assignment -name VERILOG_FILE i2c_sender.v
+set_global_assignment -name VERILOG_FILE frame_buffer.v
+set_global_assignment -name SYSTEMVERILOG_FILE forward.sv
+set_global_assignment -name SYSTEMVERILOG_FILE FFT_top_level.sv
+set_global_assignment -name SYSTEMVERILOG_FILE edge_detect.sv
+set_global_assignment -name SYSTEMVERILOG_FILE drive_motor.sv
+set_global_assignment -name SYSTEMVERILOG_FILE display_2digit.sv
+set_global_assignment -name SYSTEMVERILOG_FILE display.sv
+set_global_assignment -name SYSTEMVERILOG_FILE debounce.sv
+set_global_assignment -name SYSTEMVERILOG_FILE colour_detect.sv
+set_global_assignment -name QIP_FILE clock_domain_fifo.qip
+set_global_assignment -name SYSTEMVERILOG_FILE camera_generation_top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE address_generator.sv
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

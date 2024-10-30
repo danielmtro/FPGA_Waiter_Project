@@ -1,7 +1,8 @@
 module image_sender #(
     parameter NUM_PIXELS = 10 * 10,
 	 parameter TIME_DELAY = 5000,
-	 parameter BAUD_RATE = 9600
+	 parameter BAUD_RATE = 9600,
+     parameter CLOCK_SPEED = 50_000_000
 )(
     input clk,
     input rst,
@@ -20,7 +21,7 @@ module image_sender #(
 
     pixel_index_generator #(
         .NUM_PIXELS(NUM_PIXELS),
-		  .TIME_DELAY(TIME_DELAY)
+		.TIME_DELAY(TIME_DELAY)
     ) index_generator0 (
         .clk(clk),
         .rst(rst),
@@ -46,7 +47,7 @@ module image_sender #(
         end
     end
 
-    pixel_sender #(.CLKS_PER_BIT(50_000_000/BAUD_RATE)) p_sender (
+    pixel_sender #(.CLKS_PER_BIT(CLOCK_SPEED/BAUD_RATE)) p_sender (
         .clk(clk),
 		  .pixel(pixel),
         .rst(new_pixel_signal),

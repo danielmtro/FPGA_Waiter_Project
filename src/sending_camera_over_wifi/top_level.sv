@@ -133,9 +133,9 @@ module top_level (
 	.address(rdaddress),
 	.clk_25_vga(clk_25_vga),
 
-	.read_address_50(address),
-	.read_data_50(temp_pixel)	
-);
+	// section to read from second frame buffer
+	.retrieve_address(equivalent_address),
+	.output_data(temp_pixel));
 
  
  // detects and outputs predominantly red pixels.
@@ -187,6 +187,11 @@ module top_level (
 	// create an image to send
 	localparam num_pixels = 320 * 240;
 
+
+	// Convert to an equivalent pixel
+	logic equivalent_address;
+	assign equivalent_address = (address != 0) ? address - 1 : 0;
+
 	always_ff @(posedge CLOCK_50) begin
 		pixel <= (address == 0) ? start_pixel : temp_pixel;
 	end
@@ -196,7 +201,8 @@ module top_level (
 
 	image_sender #(.NUM_PIXELS(num_pixels),
 				   .TIME_DELAY(50000),
-				   .BAUD_RATE(115200)) is0 (
+				   .BAUD_RATE(115200),
+				   .CLOCK_SPEED(50_000_000)) is0 (
         .clk(CLOCK_50),
         .rst(edge_detect_keys[0]),
         .pixel(pixel),

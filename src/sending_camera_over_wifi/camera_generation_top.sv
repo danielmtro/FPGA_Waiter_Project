@@ -16,14 +16,14 @@ module camera_generation_top (
 	input [17:0] SW,	// switches taken as inputs	
 	input ready, // ready comes from vga or its high - create selection
 
-  input read_address_50,
-  output read_data_50,
-
 	output sop,
 	output eop,
 	output [11:0] pixel,
 	output [16:0] address,
-	output clk_25_vga
+	output clk_25_vga,
+
+ input [16:0] retrieve_address,
+ output [11:0] output_data
 );
 
 
@@ -78,19 +78,18 @@ module camera_generation_top (
     .data(wrdata),
     .wren(do_i_write));
 
-  logic do_i_write;
-  assign do_i_write = write_enable & wren;
-
-  // read from the frame data using 50 MHz
   frame_buffer Inst_frame_buffer2(
-    .rdaddress(read_address_50),
+    .rdaddress(retrieve_address),
     .rdclock(clk_50),
-    .q(read_data_50),
+    .q(output_data),
     .wrclock(ov7670_pclk),
     .wraddress(wraddress[16:0]),
     .data(wrdata),
     .wren(do_i_write));
 
+
+  logic do_i_write;
+  assign do_i_write = write_enable & wren;
 
   // create address generator
   address_generator ag0(
