@@ -107,12 +107,13 @@ module top_level (
 	
 
 	logic [11:0] temp_pixel;
-	logic write_enable;
-	assign write_enable = SW[3];
+	logic write_enable; 
+//	assign write_enable = SW[3]; // TODO set low when we are in idle_table state
+	assign write_enable = (direction == 4'b0100) ? 0 : 1;
 
 	camera_generation_top cgt0 (
-	
 	// Camera Inputs and Outputs
+	.write_enable(write_enable),
 	.ov7670_pclk(ov7670_pclk),
 	.ov7670_xclk(ov7670_xclk),
 	.ov7670_vsync(ov7670_vsync),
@@ -130,7 +131,11 @@ module top_level (
 	.eop(eop),
 	.pixel(rddata),
 	.address(rdaddress),
-	.clk_25_vga(clk_25_vga));
+	.clk_25_vga(clk_25_vga),
+
+	// section to read from second frame buffer
+	.retrieve_address(equivalent_address),
+	.output_data(temp_pixel));
 
 
 
@@ -165,8 +170,9 @@ module top_level (
 
 
 	// Convert to an equivalent pixel
-	logic equivalent_address;
-	assign equivalent_address = (address != 0) ? address - 1 : 0;
+	// Convert to an equivalent pixel
+	logic [16:0] equivalent_address;
+	assign equivalent_address = (address == 0) ? 0 : address - 1;
 
 	always_ff @(posedge CLOCK_50) begin
 		pixel <= (address == 0) ? start_pixel : temp_pixel;
@@ -174,13 +180,17 @@ module top_level (
 
 	logic image_uart;
 	assign GPIO[1] = image_uart;
+	
+	logic image_sender_rst;
+	assign image_sender_rst = (direction == 4'b0100) ? 0 : 1;
+//	assign image_sender_rst = edge_detect_keys[0];
+	//edge_detect_keys[0]
 
 	image_sender #(.NUM_PIXELS(num_pixels),
-				   .TIME_DELAY(50000),
-				   .BAUD_RATE(115200),
-				   .CLOCK_SPEED(50_000_000)) is0 (
+				   .TIME_DELAY(62000),
+				   .BAUD_RATE(115200)) is0 (
         .clk(CLOCK_50),
-        .rst(edge_detect_keys[0]), //TODO 
+        .rst(image_sender_rst), // TODO set reset based off current state
         .pixel(pixel),
         .address(address),
         .uart_out(image_uart),
@@ -197,6 +207,7 @@ module top_level (
 	logic [9:0] mic_freq;
 	logic fft_reset;
 	assign fft_reset = ~SW[1]; //TODO change this to be image_ready so that when looking at image, microphone is disabled
+//	assign fft_reset = (direction == 4'b0100) ? 1 : 0;
 	FFT_top_level FFT_TL(
 		.CLOCK_50(CLOCK_50),
 		.reset(fft_reset),

@@ -1692,6 +1692,7 @@ set_instance_assignment -name IO_STANDARD LVDS -to HSMC_CLKOUT_N1 -entity top_le
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -entity top_level_motor_driver -section_id Top
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name SYSTEMVERILOG_FILE camera/small_image_pixel_index_generator.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../BlurFaceIntegration/blurring_filter.sv
 set_global_assignment -name QIP_FILE ../vga_interface/synthesis/vga_interface.qip
 set_global_assignment -name SYSTEMVERILOG_FILE top_level.sv
