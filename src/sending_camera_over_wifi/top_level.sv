@@ -192,14 +192,6 @@ module top_level (
         .address(address),
         .uart_out(image_uart),
         .image_ready(image_ready));
-
-	always_ff @(posedge CLOCK_50) begin 
-		if(edge_detect_keys[1]) begin
-			LEDR[11:0] <= pixel;
-		end
-	end
-
-	assign LEDR[17] = image_ready;
 //	assign LEDR[16:0] = equivalent_address;
 
 endmodule

@@ -1,5 +1,6 @@
 module camera_generation_top (
 	
+  input logic write_enable,
 	// Camera Inputs and Outputs
 	input wire ov7670_pclk,
 	output wire ov7670_xclk,
@@ -14,11 +15,15 @@ module camera_generation_top (
 	input clk_50,
 	input [17:0] SW,	// switches taken as inputs	
 	input ready, // ready comes from vga or its high - create selection
+
 	output sop,
 	output eop,
 	output [11:0] pixel,
 	output [16:0] address,
-	output clk_25_vga
+	output clk_25_vga,
+
+ input [16:0] retrieve_address,
+ output [11:0] output_data
 );
 
 
@@ -71,8 +76,19 @@ module camera_generation_top (
     .wrclock(ov7670_pclk),
     .wraddress(wraddress[16:0]),
     .data(wrdata),
-    .wren(wren));
+    .wren(do_i_write));
 
+  frame_buffer Inst_frame_buffer2(
+    .rdaddress(retrieve_address),
+    .rdclock(clk_50),
+    .q(output_data),
+    .wrclock(ov7670_pclk),
+    .wraddress(wraddress[16:0]),
+    .data(wrdata),
+    .wren(do_i_write));
+ 
+  logic do_i_write;
+  assign do_i_write = write_enable & wren;
 
   // create address generator
   address_generator ag0(
