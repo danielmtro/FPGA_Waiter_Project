@@ -3,7 +3,7 @@ import lcd_inst_pkg::*;
 module turn_right_back #(
     parameter CLKS_PER_BIT = 50_000_000/115_200,
     parameter BITS_N = 8,
-    parameter NUM_BYTES = 27
+    parameter NUM_BYTES = 29
     )(
     input clk,
     input rst,
@@ -32,7 +32,7 @@ module turn_right_back #(
         .ready(uart_ready)
     );
 
-    // Hard-coded 25-byte JSON message: {"T":1,"L":-0.3,"R":-0.5}\n
+    // Hard-coded 25-byte JSON message: {"T":1,"L":-0.05R":-0.15}\n
     logic [0:NUM_BYTES-1][7:0] json_data;
     initial begin
         json_data[0] = _OPEN_BRACE;
@@ -49,19 +49,21 @@ module turn_right_back #(
         json_data[11] = _MINUS;
         json_data[12] =_0;
         json_data[13] =_PERIOD;
-        json_data[14] =_3;
-        json_data[15] =_COMMA;
-        json_data[16] =_DOUBLE_QUOTE;
-        json_data[17] =_R;
-        json_data[18] =_DOUBLE_QUOTE;
-        json_data[19] =_COLON;
-        json_data[20] = _MINUS;
-        json_data[21] =_0;
-        json_data[22] =_PERIOD;
-        json_data[23] =_5;
-        json_data[24] =_CLOSE_BRACE;
-        json_data[25] =8'h0A;
-		json_data[26] =8'h0A; // new line character
+        json_data[14] =_0;
+		  json_data[15] =_5;
+        json_data[16] =_COMMA;
+        json_data[17] =_DOUBLE_QUOTE;
+        json_data[18] =_R;
+        json_data[19] =_DOUBLE_QUOTE;
+        json_data[20] =_COLON;
+        json_data[21] = _MINUS;
+        json_data[22] =_0;
+        json_data[23] =_PERIOD;
+        json_data[24] =_1;
+		  json_data[25] =_5;
+        json_data[26] =_CLOSE_BRACE;
+        json_data[27] =8'h0A;
+		  json_data[28] =8'h0A; // new line character
     end
     
     // map the speed control correctly
@@ -78,11 +80,6 @@ module turn_right_back #(
     always_comb begin
 
         current_byte = json_data[byte_index];
-
-        // adjust the speed by the speed signal
-        if(byte_index == speed_index_0 || byte_index == speed_index_1) begin
-            current_byte = ascii_speed;
-        end
 
     end
 	 

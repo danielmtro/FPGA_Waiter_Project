@@ -32,7 +32,7 @@ module forward #(
         .ready(uart_ready)
     );
 
-    // Hard-coded 25-byte JSON message: {"T":1,"L":0.5,"R":0.5}\n
+    // Hard-coded 25-byte JSON message: {"T":1,"L":0.1,"R":0.1}\n
     logic [0:NUM_BYTES-1][7:0] json_data;
     initial begin
         json_data[0] = _OPEN_BRACE;
@@ -48,7 +48,7 @@ module forward #(
         json_data[10] =_COLON;
         json_data[11] =_0;
         json_data[12] =_PERIOD;
-        json_data[13] =_5;
+        json_data[13] =_1;
         json_data[14] =_COMMA;
         json_data[15] =_DOUBLE_QUOTE;
         json_data[16] =_R;
@@ -56,7 +56,7 @@ module forward #(
         json_data[18] =_COLON;
         json_data[19] =_0;
         json_data[20] =_PERIOD;
-        json_data[21] =_5;
+        json_data[21] =_1;
         json_data[22] =_CLOSE_BRACE;
         json_data[23] =8'h0A;
 		json_data[24] =8'h0A; // new line character
@@ -75,11 +75,6 @@ module forward #(
     always_comb begin
 
         current_byte = json_data[byte_index];
-
-        // adjust the speed by the speed signal
-        if(byte_index == speed_index_0 || byte_index == speed_index_1) begin
-            current_byte = ascii_speed;
-        end
 
     end
 	 

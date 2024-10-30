@@ -1,9 +1,11 @@
 module top_level_motor_driver (
     input wire CLOCK_50,
     output [17:0] LEDR,
+	 output [7:0] LEDG,
     input wire [17:0]SW,
     input wire [3:0]KEY,
     inout wire [35:0]GPIO, // GPIO5
+	 input wire image_ready,
 
 	// 7seg outputs
 
@@ -94,7 +96,7 @@ module top_level_motor_driver (
 	
 	logic [9:0] mic_freq;
 	logic fft_reset;
-	assign fft_reset = ~SW[1];
+	assign fft_reset = ~SW[1]; //TODO change this to be image_ready
 	FFT_top_level FFT_TL(
 		.CLOCK_50(CLOCK_50),
 		.reset(fft_reset),
@@ -147,6 +149,7 @@ module top_level_motor_driver (
 	// variables for handling drive control commands
 	logic [3:0] direction;
 	
+	
 	/*
 	For reference: direction is an enum:
 		IDLE_BASE, 	0	0000
@@ -160,6 +163,8 @@ module top_level_motor_driver (
       STOP			8	1000
 	
 	*/
+	
+	assign LEDG = direction;
 	
 	
 	// THRESHOLD FREQUENCY ON SW[8:4]
@@ -180,6 +185,7 @@ module top_level_motor_driver (
 		.clk(CLOCK_50),
 		.frequency_input(mic_freq),
 		.distance(distance),
+		.reset(SW[6]),
 		.threshold_frequency(tval),
 		.direction(direction),	//direction output. refer to above
 		.red_pixels(red_pixels),
@@ -265,6 +271,11 @@ module top_level_motor_driver (
   logic [16:0] green_pixels;
   logic [16:0] blue_pixels;
   
+  /*
+  Red: 1000 
+  Blue: 
+  */
+  
   assign upper_thresh = 4'b1000; // can be changed to SW[5:2] for calibration
  
  // detects and outputs predominantly red pixels.
@@ -285,7 +296,7 @@ module top_level_motor_driver (
 	.data_in(rddata),
 	.upper_thresh(upper_thresh),
 	.address(rdaddress),
-	.data_out(green_data),
+	.data_out(green_out),
 	.colour(1),
 	.colour_pixels(green_pixels),
 	.sop(sop));
@@ -296,20 +307,20 @@ module top_level_motor_driver (
 	.data_in(rddata),
 	.upper_thresh(upper_thresh),
 	.address(rdaddress),
-	.data_out(blue_data),
+	.data_out(blue_out),
 	.colour(2),
 	.colour_pixels(blue_pixels),
 	.sop(sop));
 	
 	
-	assign LEDR[16:0] = red_pixels;
+	assign LEDR[16:0] = blue_pixels;
 
   // choose what data we are using
   logic decision;
   assign decision = SW[2];
   logic [11:0] display_data;
   
-  assign display_data = (decision) ? red_out : rddata;
+  assign display_data = (decision) ? blue_out : rddata;
   
   // in case we want to interface with the vga
   vga_interface vgai0 (

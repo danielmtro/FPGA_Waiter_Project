@@ -10,6 +10,7 @@ module direction_fsm #(
     input           		  clk,
 	 input logic [9:0] frequency_input, // frequency input
 	 input logic [4:0] threshold_frequency,
+	 input logic reset,
 	
     input logic [7:0] distance, // ultrasonic input
 	 input logic [16:0] red_pixels,
@@ -19,6 +20,25 @@ module direction_fsm #(
 	 
     output [3:0] direction
 );
+	
+	//counter module
+	localparam F_CLK = 50000000;
+	localparam SECS = 3;
+	localparam COUNTS = SECS * F_CLK;
+	
+	logic [$clog2(COUNTS):0] counter;
+	
+	always_ff @(posedge clk) begin
+		
+		if ((current_state != TURN && next_state == TURN)  || (current_state != TURN_BACK && next_state == TURN_BACK)) begin
+			counter <= 0;
+		end
+		else begin
+			counter <= counter + 1;
+		end
+		
+	end
+	
 	
 	// declare and assign flags for red and green sightings
 	 logic red_stop_signal;
@@ -83,7 +103,7 @@ module direction_fsm #(
     // State typedef enum used here
 	 // Note that we specify the exact encoding that we want to use for each state
     typedef enum logic [3:0] {
-        IDLE_BASE,
+        IDLE_BASE = 4'b0000,
         FORWARDS,
 		  TURN,
 		  TO_TABLE,
@@ -138,7 +158,7 @@ module direction_fsm #(
 					next_state = (blue_turn_signal) ? TURN : FORWARDS;
 				end
 				TURN: begin
-					next_state = (green_turn_signal) ? TO_TABLE : TURN;
+					next_state = (green_turn_signal || counter == COUNTS) ? TO_TABLE : TURN;
 				end
             TO_TABLE : begin
                 if((too_close && i >= TIME_FOR_1s) || (red_stop_signal)) begin // corresponds to two seconds at 50MHz
@@ -152,10 +172,10 @@ module direction_fsm #(
 					next_state = green_turn_signal ? TURN_BACK : BACKWARDS;
 				end
 				TURN_BACK: begin
-					next_state = blue_turn_signal ? RETURN_HOME : TURN_BACK;
+					next_state = (blue_turn_signal || counter == COUNTS) ? RETURN_HOME : TURN_BACK;
 				end
             RETURN_HOME : begin
-                if(too_close && i >= TIME_FOR_1s) begin
+                if(too_close || red_stop_signal) begin
                     next_state = IDLE_BASE;
                 end
 					 else begin
@@ -167,7 +187,7 @@ module direction_fsm #(
 
     // always_ff for FSM state variable flip_flops
     always_ff @(posedge clk) begin
-        current_state <= next_state;
+        current_state <= reset ? IDLE_BASE : next_state;
     end
 
     // outputs

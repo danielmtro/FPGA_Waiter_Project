@@ -14,14 +14,16 @@ module drive_motor(
 	logic right_back_uart_out;
 
 	// create reset signals
-	logic f_rst, b_rst, s_rst;
+	logic f_rst, b_rst, s_rst, tl_rst, tb_rst;
 	
 	continous_motor_control cmc (
 		.clk(CLOCK_50),
 		.direction(direction),
 		.forward_rst(f_rst),
 		.reverse_rst(b_rst),
-		.stop_rst(s_rst)
+		.stop_rst(s_rst),
+		.turn_rst(tl_rst),
+		.tb_rst(tb_rst)
 	);
 	
 	forward fward (
@@ -50,7 +52,7 @@ module drive_motor(
 	turn_left left (
 		 .clk(CLOCK_50),
 		 .speed(speed),
-		 .rst(b_rst),
+		 .rst(tl_rst),
 		 .uart_out(turn_left_uart_out),
 		 .ready()
 	);
@@ -58,7 +60,7 @@ module drive_motor(
 	turn_right_back back_right (
 		 .clk(CLOCK_50),
 		 .speed(speed),
-		 .rst(b_rst),
+		 .rst(tb_rst),
 		 .uart_out(right_back_uart_out),
 		 .ready()
 	);
@@ -78,7 +80,6 @@ module drive_motor(
       STOP			8	1000
 	
 	*/
-	
 	
 	always_comb begin
 		
