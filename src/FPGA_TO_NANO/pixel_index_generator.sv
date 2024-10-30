@@ -1,6 +1,6 @@
 module pixel_index_generator #(
     parameter NUM_PIXELS = 320 * 240,
-	 parameter TIME_DELAY = 5000
+	parameter TIME_DELAY = 5000
 )(
     input clk,
     input pixel_send_ready,
