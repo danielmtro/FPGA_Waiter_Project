@@ -86,8 +86,10 @@ module camera_generation_top (
     .wraddress(wraddress[16:0]),
     .data(wrdata),
     .wren(do_i_write));
-
-
+	
+  logic [16:0] used_wr_address;
+  assign used_wr_address = (do_i_write) ? wraddress[16:0] : 0;
+ 
   logic do_i_write;
   assign do_i_write = write_enable & wren;
 

@@ -17,7 +17,7 @@ const char* password = "turtlebot";  // Your Wi-Fi network password
 
 // general variables to consider
 const int BAUD_RATE = 115200;
-const int expected_pixels = 320 * 240;
+const int expected_pixels = 160 * 120;
 int pixel_count = 0;
 bool finished_flush = false;
 
@@ -118,6 +118,7 @@ void loop()
 
             uint8_t high_byte = Serial1.read();  // First byte (high byte)
             uint8_t low_byte = Serial1.read();   // Second byte (low byte)
+
             client.write(high_byte);  // Send high byte
             client.write(low_byte); // Send low byte
             pixel_count = pixel_count + 1;

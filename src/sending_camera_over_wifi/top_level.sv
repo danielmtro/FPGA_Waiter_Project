@@ -137,26 +137,10 @@ module top_level (
 	.retrieve_address(equivalent_address),
 	.output_data(temp_pixel));
 
- 
- // detects and outputs predominantly red pixels.
- // saves the number of pixels in red_pixels variable
-  colour_detect cd0(
-	.clk(CLOCK_50),
-	.data_in(rddata),
-	.upper_thresh(upper_thresh),
-	.address(rdaddress),
-	.data_out(colour_data),
-	.red_pixels(red_pixels),
-	.sop(sop));
-	
-  assign LEDR[17:1] = red_pixels;
-
   // choose what data we are using
-  logic decision;
-  assign decision = SW[2];
   logic [11:0] display_data;
   
-  assign display_data = (decision) ? colour_data : rddata;
+  assign display_data =  rddata;
 
   // in case we want to interface with the vga
   vga_interface vgai0 (
@@ -189,8 +173,8 @@ module top_level (
 
 
 	// Convert to an equivalent pixel
-	logic equivalent_address;
-	assign equivalent_address = (address != 0) ? address - 1 : 0;
+	logic [16:0] equivalent_address;
+	assign equivalent_address = (address == 0) ? 0 : address - 1;
 
 	always_ff @(posedge CLOCK_50) begin
 		pixel <= (address == 0) ? start_pixel : temp_pixel;
@@ -200,9 +184,8 @@ module top_level (
 	assign GPIO[1] = image_uart;
 
 	image_sender #(.NUM_PIXELS(num_pixels),
-				   .TIME_DELAY(50000),
-				   .BAUD_RATE(115200),
-				   .CLOCK_SPEED(50_000_000)) is0 (
+				   .TIME_DELAY(62000),
+				   .BAUD_RATE(115200)) is0 (
         .clk(CLOCK_50),
         .rst(edge_detect_keys[0]),
         .pixel(pixel),
@@ -210,6 +193,13 @@ module top_level (
         .uart_out(image_uart),
         .image_ready(image_ready));
 
-	assign LEDR[0] = image_ready;
+	always_ff @(posedge CLOCK_50) begin 
+		if(edge_detect_keys[1]) begin
+			LEDR[11:0] <= pixel;
+		end
+	end
+
+	assign LEDR[17] = image_ready;
+//	assign LEDR[16:0] = equivalent_address;
 
 endmodule

@@ -42,8 +42,6 @@ output reg [11:0] q
 );
 
 
-
-
 // read signals
 wire [11:0] q_top;
 wire [11:0] q_bottom;

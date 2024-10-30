@@ -11,8 +11,8 @@ PORT = 80
 SERVER_IP = '10.42.0.97'
 
 #number of pixels to expect in image
-IMAGE_WIDTH = 320
-IMAGE_HEIGHT = 240
+IMAGE_WIDTH = 160
+IMAGE_HEIGHT = 120
 num_pixels = IMAGE_WIDTH * IMAGE_HEIGHT
 
 """
