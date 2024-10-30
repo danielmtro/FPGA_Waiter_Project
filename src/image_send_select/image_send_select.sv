@@ -3,7 +3,7 @@
 module image_send_select # (
     parameter WAIT_TIME = 50_000_000, // 1 second
     parameter RESET_TIME = 50_000_000, // 1 second
-    parameter [3:0] TABLE_STATE = 4'b0000
+    parameter [3:0] TABLE_STATE = 4'b0100
     ) (
     input logic clk,  // 50MHz
 

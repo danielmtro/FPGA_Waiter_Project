@@ -281,15 +281,18 @@ module top_level_motor_driver (
 
   logic [11:0] image_send_select_fsm_output;
   
+  localparam TABLE_STATE = 4'b0100;
+  localparam ONE_SECOND_DELAY = 50_000_000;
+
   image_send_select #(
-	.WAIT_TIME(50_000_000),
-	.RESET_TIME(50_000_000),
-	.TABLE_STATE(4'b0000)
+	.WAIT_TIME(ONE_SECOND_DELAY),
+	.RESET_TIME(ONE_SECOND_DELAY),
+	.TABLE_STATE(TABLE_STATE)
   ) iamge_send (
 	.clk(CLOCK_50),
 	.norm_in(rddata),
 	.blur_in(12'b0000_1111_0000),
-	.state(4'b0000),
+	.state(4'b0100),
 	.image_ready(image_ready),
 	.reset_signal(LEDR[17]),
 	.data_out(image_send_select_fsm_output)
