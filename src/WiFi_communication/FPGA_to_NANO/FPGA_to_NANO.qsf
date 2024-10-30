@@ -19,14 +19,53 @@
 #
 # Quartus Prime
 # Version 20.1.0 Build 711 06/05/2020 SJ Lite Edition
-# Date created = 08:01:26  October 15, 2024
+# Date created = 20:29:36  October 28, 2024
 #
 # -------------------------------------------------------------------------- #
 #
 # Notes:
 #
 # 1) The default values for assignments are stored in the file:
-#		top_level_motor_driver_assignment_defaults.qdf
+#		FPGA_to_NANO_assignment_defaults.qdf
+#    If this file doesn't exist, see file:
+#		assignment_defaults.qdf
+#
+# 2) Altera recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus Prime software
+#    and any changes you make may be lost or overwritten.
+#
+# -------------------------------------------------------------------------- #
+
+
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 2020  Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions 
+# and other software and tools, and any partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License 
+# Subscription Agreement, the Intel Quartus Prime License Agreement,
+# the Intel FPGA IP License Agreement, or other applicable license
+# agreement, including, without limitation, that your use is for
+# the sole purpose of programming logic devices manufactured by
+# Intel and sold by Intel or its authorized distributors.  Please
+# refer to the applicable agreement for further details, at
+# https://fpgasoftware.intel.com/eula.
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus Prime
+# Version 20.1.0 Build 711 06/05/2020 SJ Lite Edition
+# Date created = 20:04:31  October 17, 2024
+#
+# -------------------------------------------------------------------------- #
+#
+# Notes:
+#
+# 1) The default values for assignments are stored in the file:
+#		FPGA_to_NANO_assignment_defaults.qdf
 #    If this file doesn't exist, see file:
 #		assignment_defaults.qdf
 #
@@ -39,18 +78,18 @@
 
 set_global_assignment -name FAMILY "Cyclone IV E"
 set_global_assignment -name DEVICE EP4CE115F29C7
-set_global_assignment -name TOP_LEVEL_ENTITY top_level_motor_driver
+set_global_assignment -name TOP_LEVEL_ENTITY send_pixel_top_level
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 20.1.0
-set_global_assignment -name PROJECT_CREATION_TIME_DATE "08:01:25  OCTOBER 15, 2024"
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "20:04:31  OCTOBER 17, 2024"
 set_global_assignment -name LAST_QUARTUS_VERSION "20.1.0 Lite Edition"
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 1
 set_global_assignment -name NOMINAL_CORE_SUPPLY_VOLTAGE 1.2V
-set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (SystemVerilog)"
+set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (Verilog)"
 set_global_assignment -name EDA_TIME_SCALE "1 ps" -section_id eda_simulation
-set_global_assignment -name EDA_OUTPUT_DATA_FORMAT "SYSTEMVERILOG HDL" -section_id eda_simulation
+set_global_assignment -name EDA_OUTPUT_DATA_FORMAT "VERILOG HDL" -section_id eda_simulation
 set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_timing
 set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_symbol
 set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_signal_integrity
@@ -580,665 +619,6 @@ set_location_assignment PIN_V22 -to HSMC_TX_D_N[16]
 set_location_assignment PIN_T22 -to HSMC_RX_D_N[16]
 set_location_assignment PIN_V24 -to HSMC_CLKOUT_N2
 set_location_assignment PIN_G24 -to HSMC_CLKOUT_N1
-set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
-set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
-set_global_assignment -name EDA_TEST_BENCH_ENABLE_STATUS TEST_BENCH_MODE -section_id eda_simulation
-set_global_assignment -name EDA_NATIVELINK_SIMULATION_TEST_BENCH image_send_fsm_tb -section_id eda_simulation
-set_global_assignment -name EDA_TEST_BENCH_NAME json_command_sender_tb -section_id eda_simulation
-set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id json_command_sender_tb
-set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME json_command_sender_tb -section_id json_command_sender_tb
-set_global_assignment -name ENABLE_SIGNALTAP ON
-set_global_assignment -name EDA_SIMULATION_RUN_SCRIPT json_command_sender_tb.sv -section_id eda_simulation
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -entity top_level -section_id Top
-set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -entity top_level -section_id Top
-set_global_assignment -name PARTITION_COLOR 16764057 -entity top_level -section_id Top
-set_location_assignment PIN_M23 -to btn_resend
-set_location_assignment PIN_Y2 -to clk_50
-set_location_assignment PIN_E22 -to config_start
-set_location_assignment PIN_E21 -to led_config_finished
-set_location_assignment PIN_AD19 -to ov7670_data[0]
-set_location_assignment PIN_AF15 -to ov7670_data[1]
-set_location_assignment PIN_AF24 -to ov7670_data[2]
-set_location_assignment PIN_AE21 -to ov7670_data[3]
-set_location_assignment PIN_AF25 -to ov7670_data[4]
-set_location_assignment PIN_AC22 -to ov7670_data[5]
-set_location_assignment PIN_AE22 -to ov7670_data[6]
-set_location_assignment PIN_AF21 -to ov7670_data[7]
-set_location_assignment PIN_AG25 -to ov7670_href
-set_location_assignment PIN_AD22 -to ov7670_pclk
-set_location_assignment PIN_AC19 -to ov7670_pwdn
-set_location_assignment PIN_AF16 -to ov7670_reset
-set_location_assignment PIN_AE25 -to ov7670_sioc
-set_location_assignment PIN_AH25 -to ov7670_siod
-set_location_assignment PIN_AD25 -to ov7670_vsync
-set_location_assignment PIN_AF22 -to ov7670_xclk
-set_location_assignment PIN_A12 -to vga_CLK
-set_location_assignment PIN_B10 -to vga_b[0]
-set_location_assignment PIN_A10 -to vga_b[1]
-set_location_assignment PIN_C11 -to vga_b[2]
-set_location_assignment PIN_B11 -to vga_b[3]
-set_location_assignment PIN_A11 -to vga_b[4]
-set_location_assignment PIN_C12 -to vga_b[5]
-set_location_assignment PIN_D11 -to vga_b[6]
-set_location_assignment PIN_D12 -to vga_b[7]
-set_location_assignment PIN_F11 -to vga_blank_N
-set_location_assignment PIN_G8 -to vga_g[0]
-set_location_assignment PIN_G11 -to vga_g[1]
-set_location_assignment PIN_F8 -to vga_g[2]
-set_location_assignment PIN_H12 -to vga_g[3]
-set_location_assignment PIN_C8 -to vga_g[4]
-set_location_assignment PIN_B8 -to vga_g[5]
-set_location_assignment PIN_F10 -to vga_g[6]
-set_location_assignment PIN_C9 -to vga_g[7]
-set_location_assignment PIN_G13 -to vga_hsync
-set_location_assignment PIN_E12 -to vga_r[0]
-set_location_assignment PIN_E11 -to vga_r[1]
-set_location_assignment PIN_D10 -to vga_r[2]
-set_location_assignment PIN_F12 -to vga_r[3]
-set_location_assignment PIN_G10 -to vga_r[4]
-set_location_assignment PIN_J12 -to vga_r[5]
-set_location_assignment PIN_H8 -to vga_r[6]
-set_location_assignment PIN_H10 -to vga_r[7]
-set_location_assignment PIN_C10 -to vga_sync_N
-set_location_assignment PIN_C13 -to vga_vsync
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -entity digital_cam_impl1 -section_id Top
-set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -entity digital_cam_impl1 -section_id Top
-set_global_assignment -name PARTITION_COLOR 16764057 -entity digital_cam_impl1 -section_id Top
-set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -entity digital_cam_impl1 -section_id Top
-set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -entity top_level -section_id Top
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AUD_ADCDAT -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AUD_ADCLRCK -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AUD_BCLK -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AUD_DACDAT -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AUD_DACLRCK -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AUD_XCK -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CLOCK2_50 -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CLOCK3_50 -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CLOCK_50 -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[12] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[11] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[10] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[9] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[8] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[7] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_ADDR[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_BA[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_BA[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_CAS_N -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_CKE -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_CLK -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_CS_N -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[31] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[30] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[29] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[28] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[27] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[26] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[25] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[24] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[23] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[22] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[21] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[20] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[19] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[18] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[17] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[16] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[15] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[14] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[13] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[12] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[11] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[10] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[9] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[8] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[7] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQ[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQM[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQM[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQM[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_DQM[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_RAS_N -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to DRAM_WE_N -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to EEP_I2C_SCLK -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to EEP_I2C_SDAT -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET0_GTX_CLK -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET0_INT_N -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to ENET0_LINK100 -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET0_MDC -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET0_MDIO -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET0_RST_N -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET0_RX_CLK -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET0_RX_COL -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET0_RX_CRS -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET0_RX_DATA[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET0_RX_DATA[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET0_RX_DATA[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET0_RX_DATA[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET0_RX_DV -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET0_RX_ER -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET0_TX_CLK -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET0_TX_DATA[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET0_TX_DATA[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET0_TX_DATA[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET0_TX_DATA[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET0_TX_EN -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET0_TX_ER -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET1_GTX_CLK -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET1_INT_N -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to ENET1_LINK100 -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET1_MDC -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET1_MDIO -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET1_RST_N -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET1_RX_CLK -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET1_RX_COL -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET1_RX_CRS -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET1_RX_DATA[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET1_RX_DATA[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET1_RX_DATA[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET1_RX_DATA[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET1_RX_DV -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET1_RX_ER -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET1_TX_CLK -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET1_TX_DATA[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET1_TX_DATA[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET1_TX_DATA[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET1_TX_DATA[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET1_TX_EN -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ENET1_TX_ER -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to ENETCLK_25 -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to EX_IO[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to EX_IO[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to EX_IO[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to EX_IO[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to EX_IO[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to EX_IO[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to EX_IO[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_ADDR[22] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_ADDR[21] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_ADDR[20] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_ADDR[19] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_ADDR[18] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_ADDR[17] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_ADDR[16] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_ADDR[15] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_ADDR[14] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_ADDR[13] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_ADDR[12] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_ADDR[11] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_ADDR[10] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_ADDR[9] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_ADDR[8] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_ADDR[7] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_ADDR[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_ADDR[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_ADDR[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_ADDR[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_ADDR[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_ADDR[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_ADDR[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_CE_N -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_DQ[7] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_DQ[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_DQ[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_DQ[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_DQ[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_DQ[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_DQ[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_DQ[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_OE_N -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_RST_N -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_RY -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_WE_N -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to FL_WP_N -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[35] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[34] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[33] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[32] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[31] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[30] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[29] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[28] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[27] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[26] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[25] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[24] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[23] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[22] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[21] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[20] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[19] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[18] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[17] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[16] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[15] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[14] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[13] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[12] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[11] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[10] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[9] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[8] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[7] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX0[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX0[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX0[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX0[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX0[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX0[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX0[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX1[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX1[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX1[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX1[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX1[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX1[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX1[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX2[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX2[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX2[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX2[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX2[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX2[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX2[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX3[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX3[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX3[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX3[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX3[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX3[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HEX3[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX4[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX5[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX5[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX5[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX5[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX5[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX5[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX5[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX6[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX6[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX6[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX6[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX6[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX6[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX6[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX7[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX7[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX7[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX7[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX7[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX7[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HEX7[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to HSMC_CLKIN0 -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_CLKIN_P1 -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_CLKIN_P2 -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HSMC_CLKOUT0 -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_CLKOUT_P1 -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_CLKOUT_P2 -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HSMC_D[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HSMC_D[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HSMC_D[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HSMC_D[0] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_P[16] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_P[15] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_P[14] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_P[13] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_P[12] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_P[11] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_P[10] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_P[9] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_P[8] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_P[7] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_P[6] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_P[5] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_P[4] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_P[3] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_P[2] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_P[1] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_P[0] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_P[16] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_P[15] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_P[14] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_P[13] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_P[12] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_P[11] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_P[10] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_P[9] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_P[8] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_P[7] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_P[6] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_P[5] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_P[4] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_P[3] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_P[2] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_P[1] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_P[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to I2C_SCLK -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to I2C_SDAT -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to IRDA_RXD -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to KEY[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to KEY[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to KEY[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to KEY[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_BLON -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_DATA[7] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_DATA[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_DATA[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_DATA[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_DATA[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_DATA[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_DATA[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_DATA[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_EN -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_ON -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_RS -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_RW -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDG[8] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDG[7] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDG[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDG[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDG[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDG[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDG[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDG[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDG[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDR[17] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDR[16] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDR[15] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDR[14] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDR[13] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDR[12] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDR[11] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDR[10] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDR[9] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDR[8] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDR[7] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDR[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDR[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDR[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDR[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDR[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDR[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to LEDR[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_ADDR[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_ADDR[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_CS_N -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_DACK_N[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_DACK_N[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_DATA[15] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_DATA[14] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_DATA[13] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_DATA[12] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_DATA[11] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_DATA[10] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_DATA[9] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_DATA[8] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_DATA[7] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_DATA[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_DATA[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_DATA[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_DATA[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_DATA[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_DATA[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_DATA[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_DREQ[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_DREQ[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_FSPEED -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_INT[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_INT[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_LSPEED -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_RD_N -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_RST_N -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to OTG_WR_N -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PS2_CLK -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PS2_CLK2 -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PS2_DAT -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PS2_DAT2 -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SD_CLK -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SD_CMD -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SD_DAT[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SD_DAT[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SD_DAT[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SD_DAT[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SD_WP_N -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SMA_CLKIN -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SMA_CLKOUT -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_ADDR[19] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_ADDR[18] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_ADDR[17] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_ADDR[16] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_ADDR[15] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_ADDR[14] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_ADDR[13] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_ADDR[12] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_ADDR[11] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_ADDR[10] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_ADDR[9] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_ADDR[8] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_ADDR[7] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_ADDR[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_ADDR[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_ADDR[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_ADDR[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_ADDR[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_ADDR[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_ADDR[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_CE_N -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_DQ[15] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_DQ[14] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_DQ[13] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_DQ[12] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_DQ[11] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_DQ[10] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_DQ[9] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_DQ[8] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_DQ[7] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_DQ[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_DQ[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_DQ[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_DQ[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_DQ[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_DQ[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_DQ[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_LB_N -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_OE_N -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_UB_N -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_WE_N -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to SW[17] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to SW[16] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to SW[15] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to SW[14] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to SW[13] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to SW[12] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to SW[11] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to SW[10] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to SW[9] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to SW[8] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to SW[7] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to SW[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to SW[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to SW[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to SW[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to SW[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to SW[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "2.5 V" -to SW[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TD_CLK27 -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TD_DATA[7] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TD_DATA[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TD_DATA[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TD_DATA[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TD_DATA[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TD_DATA[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TD_DATA[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TD_DATA[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TD_HS -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TD_RESET_N -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TD_VS -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to UART_CTS -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to UART_RTS -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to UART_RXD -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to UART_TXD -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[7] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_BLANK_N -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_CLK -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[7] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_HS -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[7] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[6] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[5] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[4] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[3] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[2] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[1] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[0] -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_SYNC_N -entity top_level
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_VS -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_CLKIN_N1 -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_CLKIN_N2 -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_N[0] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_N[0] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_N[1] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_N[1] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_N[2] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_N[2] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_N[3] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_N[3] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_N[4] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_N[4] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_N[5] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_N[5] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_N[6] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_N[6] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_N[7] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_N[7] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_N[8] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_N[8] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_N[9] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_N[9] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_N[10] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_N[10] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_N[11] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_N[11] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_N[12] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_N[12] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_N[13] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_N[13] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_N[14] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_N[14] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_N[15] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_N[15] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_N[16] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_N[16] -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_CLKOUT_N2 -entity top_level
-set_instance_assignment -name IO_STANDARD LVDS -to HSMC_CLKOUT_N1 -entity top_level
-set_global_assignment -name SYSTEMVERILOG_FILE colour_detect.sv
-set_global_assignment -name EDA_TEST_BENCH_FILE json_command_sender_tb.sv -section_id json_command_sender_tb
-set_global_assignment -name EDA_TEST_BENCH_NAME image_send_fsm_tb -section_id eda_simulation
-set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id image_send_fsm_tb
-set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME image_send_fsm_tb -section_id image_send_fsm_tb
-set_global_assignment -name EDA_TEST_BENCH_FILE ../image_send_select/image_send_select_tb.sv -section_id image_send_fsm_tb
-set_global_assignment -name SYSTEMVERILOG_FILE image_send_select_tb.sv
-set_global_assignment -name SYSTEMVERILOG_FILE image_send_select.sv
-set_global_assignment -name QIP_FILE ../vga_interface/synthesis/vga_interface.qip
-set_global_assignment -name VERILOG_FILE i2c_sender.v
-set_global_assignment -name SYSTEMVERILOG_FILE camera_generation_top.sv
-set_global_assignment -name VERILOG_FILE ov7670_registers.v
-set_global_assignment -name VERILOG_FILE ov7670_controller.v
-set_global_assignment -name VERILOG_FILE ov7670_capture.v
-set_global_assignment -name VERILOG_FILE my_frame_buffer_15to0.v
-set_global_assignment -name VERILOG_FILE my_altpll.v
-set_global_assignment -name VERILOG_FILE frame_buffer.v
-set_global_assignment -name SYSTEMVERILOG_FILE address_generator.sv
-set_global_assignment -name SYSTEMVERILOG_FILE top_level_distance_sensor.sv
-set_global_assignment -name SYSTEMVERILOG_FILE sensor_driver.sv
-set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/TwiddleConvert8.v
-set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/TwiddleConvert4.v
-set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/Twiddle.v
-set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/SdfUnit2.v
-set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/SdfUnit_TC.v
-set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/Multiply.v
-set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/FFT.v
-set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/DelayBuffer.v
-set_global_assignment -name VERILOG_FILE FFT_files/r22sdf/Butterfly.v
-set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/mic/set_audio_encoder.sv
-set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/mic/mic_load.sv
-set_global_assignment -name QIP_FILE FFT_files/mic/i2c_pll.qip
-set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/mic/i2c_master.sv
-set_global_assignment -name QIP_FILE FFT_files/mic/adc_pll.qip
-set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/low_pass_conv.sv
-set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/fft_pitch_detect.sv
-set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/fft_mag_sq.sv
-set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/fft_input_buffer.sv
-set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/fft_find_peak.sv
-set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/dstream.sv
-set_global_assignment -name SYSTEMVERILOG_FILE FFT_files/display.sv
-set_global_assignment -name QIP_FILE FFT_files/async_fifo.qip
-set_global_assignment -name SYSTEMVERILOG_FILE nbit_synchroniser.sv
-set_global_assignment -name SYSTEMVERILOG_FILE continuous_motor_control.sv
-set_global_assignment -name SYSTEMVERILOG_FILE speed_control_mapping.sv
-set_global_assignment -name SYSTEMVERILOG_FILE stop.sv
-set_global_assignment -name SYSTEMVERILOG_FILE direction_fsm.sv
-set_global_assignment -name SYSTEMVERILOG_FILE forward.sv
-set_global_assignment -name SYSTEMVERILOG_FILE backwards.sv
-set_global_assignment -name SYSTEMVERILOG_FILE synchroniser.sv
-set_global_assignment -name SYSTEMVERILOG_FILE lcd_inst_pkg.sv
-set_global_assignment -name SYSTEMVERILOG_FILE edge_detect.sv
-set_global_assignment -name SYSTEMVERILOG_FILE debounce.sv
-set_global_assignment -name SYSTEMVERILOG_FILE uart_tx_tb.sv
-set_global_assignment -name SYSTEMVERILOG_FILE uart_tx.sv
-set_global_assignment -name SYSTEMVERILOG_FILE top_level_motor_driver.sv
-set_global_assignment -name SYSTEMVERILOG_FILE json_command_sender_tb.sv
-set_global_assignment -name SYSTEMVERILOG_FILE json_command_sender.sv
-set_global_assignment -name SYSTEMVERILOG_FILE FFT_top_level.sv
-set_global_assignment -name SYSTEMVERILOG_FILE drive_motor.sv
-set_global_assignment -name SYSTEMVERILOG_FILE reset_pulser.sv
-set_global_assignment -name SYSTEMVERILOG_FILE speed_fsm.sv
-set_global_assignment -name SYSTEMVERILOG_FILE display_2digit.sv
-set_global_assignment -name SYSTEMVERILOG_FILE TURN_LEFT.sv
-set_global_assignment -name SYSTEMVERILOG_FILE turn_right_back.sv
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
-set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
-set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AUD_ADCDAT
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AUD_ADCLRCK
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AUD_BCLK
@@ -1764,4 +1144,32 @@ set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_N[16]
 set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_N[16]
 set_instance_assignment -name IO_STANDARD LVDS -to HSMC_CLKOUT_N2
 set_instance_assignment -name IO_STANDARD LVDS -to HSMC_CLKOUT_N1
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name EDA_TEST_BENCH_ENABLE_STATUS TEST_BENCH_MODE -section_id eda_simulation
+set_global_assignment -name EDA_NATIVELINK_SIMULATION_TEST_BENCH send_pixel_top_level_tb -section_id eda_simulation
+set_global_assignment -name EDA_TEST_BENCH_NAME send_pixel_top_level_tb -section_id eda_simulation
+set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id send_pixel_top_level_tb
+set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME send_pixel_top_level_tb -section_id send_pixel_top_level_tb
+set_global_assignment -name EDA_TEST_BENCH_FILE send_pixel_top_level_tb.sv -section_id send_pixel_top_level_tb
+set_global_assignment -name ENABLE_SIGNALTAP ON
+set_global_assignment -name USE_SIGNALTAP_FILE top_level.stp
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name MIF_FILE "chad-ho-320x240.mif"
+set_global_assignment -name HEX_FILE "chad-ho-320x240.hex"
+set_global_assignment -name VERILOG_FILE synchroniser.v
+set_global_assignment -name SYSTEMVERILOG_FILE debounce.sv
+set_global_assignment -name SYSTEMVERILOG_FILE uart_tx_tb.sv
+set_global_assignment -name SYSTEMVERILOG_FILE uart_tx_2_byte.sv
+set_global_assignment -name SYSTEMVERILOG_FILE uart_tx.sv
+set_global_assignment -name SYSTEMVERILOG_FILE uart_top_level_tb.sv
+set_global_assignment -name SYSTEMVERILOG_FILE uart_top_level.sv
+set_global_assignment -name SYSTEMVERILOG_FILE send_pixel_top_level.sv
+set_global_assignment -name SYSTEMVERILOG_FILE send_pixel_tb.sv
+set_global_assignment -name SYSTEMVERILOG_FILE send_pixel.sv
+set_global_assignment -name SYSTEMVERILOG_FILE edge_detect.sv
+set_global_assignment -name SYSTEMVERILOG_FILE send_pixel_top_level_tb.sv
+set_global_assignment -name SIGNALTAP_FILE top_level.stp
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

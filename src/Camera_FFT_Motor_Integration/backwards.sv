@@ -32,7 +32,7 @@ module backwards #(
         .ready(uart_ready)
     );
 
-    // Hard-coded 25-byte JSON message: {"T":11,"L":164,"R":164}\n
+    // Hard-coded 25-byte JSON message: {"T":1,"L":-0.1,"R":-0.1}\n
     logic [0:NUM_BYTES-1][7:0] json_data;
     initial begin
         json_data[0] = _OPEN_BRACE;
@@ -49,7 +49,7 @@ module backwards #(
         json_data[11] = _MINUS;
         json_data[12] =_0;
         json_data[13] =_PERIOD;
-        json_data[14] =_5;
+        json_data[14] =_1;
         json_data[15] =_COMMA;
         json_data[16] =_DOUBLE_QUOTE;
         json_data[17] =_R;
@@ -58,7 +58,7 @@ module backwards #(
         json_data[20] = _MINUS;
         json_data[21] =_0;
         json_data[22] =_PERIOD;
-        json_data[23] =_5;
+        json_data[23] =_1;
         json_data[24] =_CLOSE_BRACE;
         json_data[25] =8'h0A;
 		json_data[26] =8'h0A; // new line character
@@ -78,11 +78,6 @@ module backwards #(
     always_comb begin
 
         current_byte = json_data[byte_index];
-
-        // adjust the speed by the speed signal
-        if(byte_index == speed_index_0 || byte_index == speed_index_1) begin
-            current_byte = ascii_speed;
-        end
 
     end
 	 

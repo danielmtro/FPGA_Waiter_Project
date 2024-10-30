@@ -1,9 +1,11 @@
 module top_level_motor_driver (
     input wire CLOCK_50,
     output [17:0] LEDR,
+	 output [7:0] LEDG,
     input wire [17:0]SW,
     input wire [3:0]KEY,
     inout wire [35:0]GPIO, // GPIO5
+	 input wire image_ready,
 
 	// 7seg outputs
 
@@ -94,7 +96,7 @@ module top_level_motor_driver (
 	
 	logic [9:0] mic_freq;
 	logic fft_reset;
-	assign fft_reset = ~SW[1];
+	assign fft_reset = ~SW[1]; //TODO change this to be image_ready
 	FFT_top_level FFT_TL(
 		.CLOCK_50(CLOCK_50),
 		.reset(fft_reset),
@@ -145,7 +147,24 @@ module top_level_motor_driver (
 	);
 	
 	// variables for handling drive control commands
-	logic [2:0] direction;
+	logic [3:0] direction;
+	
+	
+	/*
+	For reference: direction is an enum:
+		IDLE_BASE, 	0	0000
+      FORWARDS,	1	0001
+		TURN,			2	0010
+		TO_TABLE,	3	0011
+      IDLE_TABLE,	4	0100
+      BACKWARDS,	5	0101
+		TURN_BACK,	6	0110
+		RETURN_HOME,7	0111
+      STOP			8	1000
+	
+	*/
+	
+	assign LEDG = direction;
 	
 	
 	// THRESHOLD FREQUENCY ON SW[8:4]
@@ -166,9 +185,12 @@ module top_level_motor_driver (
 		.clk(CLOCK_50),
 		.frequency_input(mic_freq),
 		.distance(distance),
+		.reset(SW[6]),
 		.threshold_frequency(tval),
-		.direction(direction),
+		.direction(direction),	//direction output. refer to above
 		.red_pixels(red_pixels),
+		.green_pixels(green_pixels),
+		.blue_pixels(blue_pixels),
 		.threshold_pixels(red_pixel_threshold)
 	);
 	
@@ -241,45 +263,66 @@ module top_level_motor_driver (
 	 
 
   logic [11:0] colour_data;
+  logic [11:0] red_out;
+  logic [11:0] green_out;
+  logic [11:0] blue_out;
   logic [3:0] upper_thresh;
   logic [16:0] red_pixels;
+  logic [16:0] green_pixels;
+  logic [16:0] blue_pixels;
+  
+  /*
+  Red: 1000 
+  Blue: 
+  */
   
   assign upper_thresh = 4'b1000; // can be changed to SW[5:2] for calibration
  
  // detects and outputs predominantly red pixels.
  // saves the number of pixels in red_pixels variable
-  colour_detect cd0(
+  colour_detect red_detect(
 	.clk(CLOCK_50),
 	.data_in(rddata),
 	.upper_thresh(upper_thresh),
 	.address(rdaddress),
-	.data_out(colour_data),
-	.red_pixels(red_pixels),
+	.data_out(red_out),
+	.colour(0),
+	.colour_pixels(red_pixels),
 	.sop(sop));
 	
+	// green colour detection
+	colour_detect green_detect(
+	.clk(CLOCK_50),
+	.data_in(rddata),
+	.upper_thresh(upper_thresh),
+	.address(rdaddress),
+	.data_out(green_out),
+	.colour(1),
+	.colour_pixels(green_pixels),
+	.sop(sop));
+	
+	// green colour detection
+	colour_detect blue_detect(
+	.clk(CLOCK_50),
+	.data_in(rddata),
+	.upper_thresh(upper_thresh),
+	.address(rdaddress),
+	.data_out(blue_out),
+	.colour(2),
+	.colour_pixels(blue_pixels),
+	.sop(sop));
+	
+	
+	assign LEDR[16:0] = blue_pixels;
+
+
   // choose what data we are using
   logic decision;
   assign decision = SW[2];
   logic [11:0] display_data;
   
-  assign display_data = (decision) ? image_send_select_fsm_output : rddata;
-  
-  // 10 sec delay
-  localparam TEN_SEC_DELAY = 500_000_000;
-  logic [28:0] delay_counter;
-  logic image_ready;
+  assign display_data = (decision) ? blue_out : rddata;
 
-  always_ff @(posedge CLOCK_50) begin
-	delay_counter <= delay_counter + 1;
-	if (delay_counter == TEN_SEC_DELAY) begin
-		image_ready = 1'b1;
-	end
-	else begin
-		image_ready = 1'b0;
-	end
-  end
-
-  logic [11:0] image_send_select_fsm_output;
   
   localparam TABLE_STATE = 4'b0100;
   localparam ONE_SECOND_DELAY = 50_000_000;

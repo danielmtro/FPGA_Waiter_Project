@@ -1,9 +1,9 @@
 import lcd_inst_pkg::*;
 
-module forward #(
+module turn_right_back #(
     parameter CLKS_PER_BIT = 50_000_000/115_200,
     parameter BITS_N = 8,
-    parameter NUM_BYTES = 25
+    parameter NUM_BYTES = 29
     )(
     input clk,
     input rst,
@@ -32,7 +32,7 @@ module forward #(
         .ready(uart_ready)
     );
 
-    // Hard-coded 25-byte JSON message: {"T":1,"L":0.1,"R":0.1}\n
+    // Hard-coded 25-byte JSON message: {"T":1,"L":-0.05R":-0.15}\n
     logic [0:NUM_BYTES-1][7:0] json_data;
     initial begin
         json_data[0] = _OPEN_BRACE;
@@ -46,20 +46,24 @@ module forward #(
         json_data[8] =_L;
         json_data[9] =_DOUBLE_QUOTE;
         json_data[10] =_COLON;
-        json_data[11] =_0;
-        json_data[12] =_PERIOD;
-        json_data[13] =_1;
-        json_data[14] =_COMMA;
-        json_data[15] =_DOUBLE_QUOTE;
-        json_data[16] =_R;
+        json_data[11] = _MINUS;
+        json_data[12] =_0;
+        json_data[13] =_PERIOD;
+        json_data[14] =_0;
+		  json_data[15] =_5;
+        json_data[16] =_COMMA;
         json_data[17] =_DOUBLE_QUOTE;
-        json_data[18] =_COLON;
-        json_data[19] =_0;
-        json_data[20] =_PERIOD;
-        json_data[21] =_1;
-        json_data[22] =_CLOSE_BRACE;
-        json_data[23] =8'h0A;
-		json_data[24] =8'h0A; // new line character
+        json_data[18] =_R;
+        json_data[19] =_DOUBLE_QUOTE;
+        json_data[20] =_COLON;
+        json_data[21] = _MINUS;
+        json_data[22] =_0;
+        json_data[23] =_PERIOD;
+        json_data[24] =_1;
+		  json_data[25] =_5;
+        json_data[26] =_CLOSE_BRACE;
+        json_data[27] =8'h0A;
+		  json_data[28] =8'h0A; // new line character
     end
     
     // map the speed control correctly
@@ -69,8 +73,9 @@ module forward #(
         .ascii_speed(ascii_speed)
     );
 
-    localparam speed_index_0 = 13;
-    localparam speed_index_1 = 21;
+
+    localparam speed_index_0 = 14;
+    localparam speed_index_1 = 23;
     // current byte based on byte index
     always_comb begin
 
