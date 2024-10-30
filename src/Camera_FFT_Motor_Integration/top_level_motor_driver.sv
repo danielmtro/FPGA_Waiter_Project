@@ -1,9 +1,11 @@
 module top_level_motor_driver (
     input wire CLOCK_50,
     output [17:0] LEDR,
+	 output [7:0] LEDG,
     input wire [17:0]SW,
     input wire [3:0]KEY,
     inout wire [35:0]GPIO, // GPIO5
+	 input wire image_ready,
 
 	// 7seg outputs
 
@@ -46,16 +48,6 @@ module top_level_motor_driver (
 	wire ov7670_pwdn; assign GPIO[10]     = ov7670_pwdn;
 	wire ov7670_reset;assign GPIO[11]     = ov7670_reset;
 
-	// vga outputs
-	wire vga_hsync; assign VGA_HS 	      = vga_hsync;
-	wire vga_vsync; assign VGA_VS 	      = vga_vsync;
-	wire [7:0] vga_r; assign VGA_R		  = vga_r;
-	wire [7:0] vga_g; assign VGA_G 		  = vga_g;
-	wire [7:0] vga_b; assign VGA_B 		  = vga_b;
-	wire vga_blank_N; assign VGA_BLANK_N  = vga_blank_N;
-	wire vga_sync_N; assign VGA_SYNC_N	  = vga_sync_N;
-	wire vga_CLK; assign VGA_CLK		  = vga_CLK;
-
 	logic [3:0] debounced_keys;
 	logic [3:0] edge_detect_keys;
 	
@@ -94,7 +86,7 @@ module top_level_motor_driver (
 	
 	logic [9:0] mic_freq;
 	logic fft_reset;
-	assign fft_reset = ~SW[1];
+	assign fft_reset = ~SW[1]; //TODO change this to be image_ready
 	FFT_top_level FFT_TL(
 		.CLOCK_50(CLOCK_50),
 		.reset(fft_reset),
@@ -145,7 +137,24 @@ module top_level_motor_driver (
 	);
 	
 	// variables for handling drive control commands
-	logic [2:0] direction;
+	logic [3:0] direction;
+	
+	
+	/*
+	For reference: direction is an enum:
+		IDLE_BASE, 	0	0000
+      FORWARDS,	1	0001
+		TURN,			2	0010
+		TO_TABLE,	3	0011
+      IDLE_TABLE,	4	0100
+      BACKWARDS,	5	0101
+		TURN_BACK,	6	0110
+		RETURN_HOME,7	0111
+      STOP			8	1000
+	
+	*/
+	
+	assign LEDG = direction;
 	
 	
 	// THRESHOLD FREQUENCY ON SW[8:4]
@@ -166,9 +175,12 @@ module top_level_motor_driver (
 		.clk(CLOCK_50),
 		.frequency_input(mic_freq),
 		.distance(distance),
+		.reset(SW[6]),
 		.threshold_frequency(tval),
-		.direction(direction),
+		.direction(direction),	//direction output. refer to above
 		.red_pixels(red_pixels),
+		.green_pixels(green_pixels),
+		.blue_pixels(blue_pixels),
 		.threshold_pixels(red_pixel_threshold)
 	);
 	
@@ -241,81 +253,66 @@ module top_level_motor_driver (
 	 
 
   logic [11:0] colour_data;
+  logic [11:0] red_out;
+  logic [11:0] green_out;
+  logic [11:0] blue_out;
   logic [3:0] upper_thresh;
   logic [16:0] red_pixels;
+  logic [16:0] green_pixels;
+  logic [16:0] blue_pixels;
+  
+  /*
+  Red: 1000 
+  Blue: 
+  */
   
   assign upper_thresh = 4'b1000; // can be changed to SW[5:2] for calibration
  
  // detects and outputs predominantly red pixels.
  // saves the number of pixels in red_pixels variable
-  colour_detect cd0(
+  colour_detect red_detect(
 	.clk(CLOCK_50),
 	.data_in(rddata),
 	.upper_thresh(upper_thresh),
 	.address(rdaddress),
-	.data_out(colour_data),
-	.red_pixels(red_pixels),
+	.data_out(red_out),
+	.colour(0),
+	.colour_pixels(red_pixels),
 	.sop(sop));
 	
+	// green colour detection
+	colour_detect green_detect(
+	.clk(CLOCK_50),
+	.data_in(rddata),
+	.upper_thresh(upper_thresh),
+	.address(rdaddress),
+	.data_out(green_out),
+	.colour(1),
+	.colour_pixels(green_pixels),
+	.sop(sop));
+	
+	// green colour detection
+	colour_detect blue_detect(
+	.clk(CLOCK_50),
+	.data_in(rddata),
+	.upper_thresh(upper_thresh),
+	.address(rdaddress),
+	.data_out(blue_out),
+	.colour(2),
+	.colour_pixels(blue_pixels),
+	.sop(sop));
+	
+	
+	assign LEDR[16:0] = blue_pixels;
+
+
   // choose what data we are using
   logic decision;
   assign decision = SW[2];
   logic [11:0] display_data;
   
-  assign display_data = (decision) ? image_send_select_fsm_output : rddata;
-  
-  // 10 sec delay
-  localparam TEN_SEC_DELAY = 500_000_000;
-  logic [28:0] delay_counter;
-  logic image_ready;
+  assign display_data = (decision) ? blue_out : rddata;
 
-  always_ff @(posedge CLOCK_50) begin
-	delay_counter <= delay_counter + 1;
-	if (delay_counter == TEN_SEC_DELAY) begin
-		image_ready = 1'b1;
-	end
-	else begin
-		image_ready = 1'b0;
-	end
-  end
-
-  logic [11:0] image_send_select_fsm_output;
-  
-  localparam TABLE_STATE = 4'b0100;
-  localparam ONE_SECOND_DELAY = 50_000_000;
-
-  image_send_select #(
-	.WAIT_TIME(ONE_SECOND_DELAY),
-	.RESET_TIME(ONE_SECOND_DELAY),
-	.TABLE_STATE(TABLE_STATE)
-  ) iamge_send (
-	.clk(CLOCK_50),
-	.norm_in(rddata),
-	.blur_in(12'b0000_1111_0000),
-	.state(4'b0100),
-	.image_ready(image_ready),
-	.reset_signal(LEDR[17]),
-	.data_out(image_send_select_fsm_output)
-  );
-
-  // in case we want to interface with the vga
-  vga_interface vgai0 (
-			 .clk_clk(clk_25_vga),                                         //                                       clk.clk
-			 .reset_reset_n(1'b1),                                   //                                     reset.reset_n
-			 .video_scaler_0_avalon_scaler_sink_startofpacket(sop), //         video_scaler_0_avalon_scaler_sink.startofpacket
-			 .video_scaler_0_avalon_scaler_sink_endofpacket(eop),   //                                          .endofpacket
-			 .video_scaler_0_avalon_scaler_sink_valid(1'b1),         //                                          .valid
-			.video_scaler_0_avalon_scaler_sink_ready(vga_ready),         //                                          .ready
-		   .video_scaler_0_avalon_scaler_sink_data(display_data),          //                                          .data
-			.video_vga_controller_0_external_interface_CLK(vga_CLK),   // video_vga_controller_0_external_interface.CLK
-			.video_vga_controller_0_external_interface_HS(vga_hsync),    //                                          .HS
-			.video_vga_controller_0_external_interface_VS(vga_vsync),    //                                          .VS
-			.video_vga_controller_0_external_interface_BLANK(vga_blank_N), //                                          .BLANK
-			.video_vga_controller_0_external_interface_SYNC(vga_sync_N),  //                                          .SYNC
-		   .video_vga_controller_0_external_interface_R(vga_r),     //                                          .R
-		   .video_vga_controller_0_external_interface_G(vga_g),     //                                          .G
-		   .video_vga_controller_0_external_interface_B(vga_b)      //                                          .B
-	);
 
 
 endmodule

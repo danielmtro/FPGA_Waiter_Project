@@ -1171,6 +1171,7 @@ set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_N[16] -entity top_l
 set_instance_assignment -name IO_STANDARD LVDS -to HSMC_RX_D_N[16] -entity top_level
 set_instance_assignment -name IO_STANDARD LVDS -to HSMC_CLKOUT_N2 -entity top_level
 set_instance_assignment -name IO_STANDARD LVDS -to HSMC_CLKOUT_N1 -entity top_level
+set_global_assignment -name SYSTEMVERILOG_FILE colour_detect.sv
 set_global_assignment -name EDA_TEST_BENCH_FILE json_command_sender_tb.sv -section_id json_command_sender_tb
 set_global_assignment -name EDA_TEST_BENCH_NAME image_send_fsm_tb -section_id eda_simulation
 set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id image_send_fsm_tb
@@ -1233,6 +1234,8 @@ set_global_assignment -name SYSTEMVERILOG_FILE drive_motor.sv
 set_global_assignment -name SYSTEMVERILOG_FILE reset_pulser.sv
 set_global_assignment -name SYSTEMVERILOG_FILE speed_fsm.sv
 set_global_assignment -name SYSTEMVERILOG_FILE display_2digit.sv
+set_global_assignment -name SYSTEMVERILOG_FILE TURN_LEFT.sv
+set_global_assignment -name SYSTEMVERILOG_FILE turn_right_back.sv
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top

@@ -1,3 +1,8 @@
+/*
+State machine which tracks which way the robot is going
+straight, left, straight, stop, back, back_left, back, stop
+*/
+
 module direction_fsm #(
     parameter FREQUENCY = 13,
 	 parameter TOO_CLOSE = 8'd30
@@ -5,16 +10,44 @@ module direction_fsm #(
     input           		  clk,
 	 input logic [9:0] frequency_input, // frequency input
 	 input logic [4:0] threshold_frequency,
+	 input logic reset,
 	
     input logic [7:0] distance, // ultrasonic input
 	 input logic [16:0] red_pixels,
+	 input logic [16:0] green_pixels,
+	 input logic [16:0] blue_pixels,
 	 input logic [16:0] threshold_pixels,
 	 
-    output [2:0] direction
+    output [3:0] direction
 );
 	
+	//counter module
+	localparam F_CLK = 50000000;
+	localparam SECS = 3;
+	localparam COUNTS = SECS * F_CLK;
+	
+	logic [$clog2(COUNTS):0] counter;
+	
+	always_ff @(posedge clk) begin
+		
+		if ((current_state != TURN && next_state == TURN)  || (current_state != TURN_BACK && next_state == TURN_BACK)) begin
+			counter <= 0;
+		end
+		else begin
+			counter <= counter + 1;
+		end
+		
+	end
+	
+	
+	// declare and assign flags for red and green sightings
 	 logic red_stop_signal;
+	 logic green_turn_signal;
+	 logic blue_turn_signal;
+	 
 	 assign red_stop_signal = (red_pixels > threshold_pixels);
+	 assign green_turn_signal = (green_pixels > threshold_pixels);
+	 assign blue_turn_signal = (blue_pixels > threshold_pixels);
 	 
 	 // add a delay to the distance calculation
 	 
@@ -69,12 +102,16 @@ module direction_fsm #(
 
     // State typedef enum used here
 	 // Note that we specify the exact encoding that we want to use for each state
-    typedef enum logic [2:0] {
-        IDLE_BASE = 3'b000,
-        FORWARDS = 3'b001,
-        IDLE_TABLE = 3'b010,
-        BACKWARDS = 3'b011,
-        STOP = 3'b100
+    typedef enum logic [3:0] {
+        IDLE_BASE = 4'b0000,
+        FORWARDS,
+		  TURN,
+		  TO_TABLE,
+        IDLE_TABLE,
+        BACKWARDS,
+		  TURN_BACK,
+		  RETURN_HOME,
+        STOP
     } state_type;
 
     // create a 1 second delay that can be used to prevent the robot 
@@ -93,6 +130,10 @@ module direction_fsm #(
     state_type current_state = IDLE_BASE, next_state;
 
     // always_comb block for next state logic
+	//drive forward, once BLUE is found, begin turn into bay
+	//while turning, when GREEN is found, stop turning and go straight
+	//drive straight until a wall is reached or RED is found
+	//do it all in reverse
     always_comb begin
         next_state = current_state;
 			
@@ -101,28 +142,52 @@ module direction_fsm #(
                 if(threshold_reached) begin
                     next_state = FORWARDS;
                 end
+					 else begin
+						next_state = IDLE_BASE;
+					 end
             end
             IDLE_TABLE : begin
                 if(threshold_reached) begin
                     next_state = BACKWARDS;
                 end
+					 else begin
+						next_state = IDLE_TABLE;
+					 end
             end
-            FORWARDS : begin
+				FORWARDS: begin
+					next_state = (blue_turn_signal) ? TURN : FORWARDS;
+				end
+				TURN: begin
+					next_state = (green_turn_signal || counter == COUNTS) ? TO_TABLE : TURN;
+				end
+            TO_TABLE : begin
                 if((too_close && i >= TIME_FOR_1s) || (red_stop_signal)) begin // corresponds to two seconds at 50MHz
                     next_state = IDLE_TABLE;
                 end
+					 else begin
+						next_state = TO_TABLE;
+					 end
             end
-            BACKWARDS : begin
-                if(too_close && i >= TIME_FOR_1s) begin
+				BACKWARDS: begin
+					next_state = green_turn_signal ? TURN_BACK : BACKWARDS;
+				end
+				TURN_BACK: begin
+					next_state = (blue_turn_signal || counter == COUNTS) ? RETURN_HOME : TURN_BACK;
+				end
+            RETURN_HOME : begin
+                if(too_close || red_stop_signal) begin
                     next_state = IDLE_BASE;
                 end
+					 else begin
+						next_state = RETURN_HOME;
+					 end
             end
 		  endcase
     end
 
     // always_ff for FSM state variable flip_flops
     always_ff @(posedge clk) begin
-        current_state <= next_state;
+        current_state <= reset ? IDLE_BASE : next_state;
     end
 
     // outputs
