@@ -13,21 +13,34 @@ module image_send_select # (
     input logic [3:0] state,      // Check for table state
     input logic image_ready,      // When frame has been recieved onto the arduino
 
+    output logic [3:0] out_state,
     output logic reset_signal,    // Reset for Arduino image sender
     output logic [11:0] data_out  // Output of pixel
 );
 
-logic [25:0] wait_counter;
-logic [25:0] reset_counter;
+integer wait_counter;
+integer reset_counter;
 
-enum {IDLE, RAW_IMAGE, WAIT, BLUR_FACE} current_state, next_state;
+enum {IDLE, RAW_IMAGE, WAIT, BLUR_FACE, FINISH} current_state, next_state;
+
+always_comb begin
+    case (current_state)
+        IDLE:       out_state = 4'b0001;
+        RAW_IMAGE:  out_state = 4'b0010;
+        WAIT:       out_state = 4'b0100;
+        BLUR_FACE:  out_state = 4'b1000;
+        FINISH:     out_state = 4'b1001;
+        default:    out_state = 4'b0000;
+    endcase
+end
 
 always_comb begin : fsm_next_state
     case (current_state)
         IDLE:       next_state = (state == TABLE_STATE) ? RAW_IMAGE : IDLE;
         RAW_IMAGE:  next_state = image_ready ? WAIT : RAW_IMAGE;
         WAIT:       next_state = (wait_counter == WAIT_TIME) ? BLUR_FACE : WAIT;
-        BLUR_FACE:  next_state = image_ready ? IDLE : BLUR_FACE;
+        BLUR_FACE:  next_state = image_ready ? FINISH : BLUR_FACE;
+        FINISH:     next_state = (state != TABLE_STATE) ? IDLE : FINISH;
         default:    next_state = IDLE;
     endcase
 end
@@ -44,15 +57,15 @@ end
 
 always_ff @(posedge clk) begin : counter_for_reset_signal
     if ((current_state == RAW_IMAGE || current_state == BLUR_FACE) && reset_signal) begin // Starts count when in raw or blur, and when reset_signal is high
-        reset_counter <= reset_counter + 1;
-        if (reset_counter == RESET_TIME) begin
-            reset_counter <= 0;
+        if (reset_counter < RESET_TIME) begin
+            reset_counter <= reset_counter + 1;
         end
     end
     else begin
-        reset_counter <= 0;
+        if (current_state == WAIT || current_state == IDLE) begin
+            reset_counter <= 0;
+        end
     end
-
 end
 
 always_comb begin : pixel_output
@@ -75,6 +88,11 @@ always_comb begin : pixel_output
         BLUR_FACE   : begin
             data_out = blur_in;
             reset_signal = (reset_counter == RESET_TIME) ? 1'b0 : 1'b1;
+        end
+
+        FINISH      : begin
+            data_out = 12'b0;
+            reset_signal = 1'b1;
         end
     endcase
 end
