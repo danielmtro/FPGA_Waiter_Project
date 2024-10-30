@@ -1120,6 +1120,7 @@ set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id image_sender
 set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME image_sender_tb -section_id image_sender_tb
 set_global_assignment -name EDA_TEST_BENCH_FILE pixel_sender_tb.sv -section_id pixel_sender_tb
 set_global_assignment -name EDA_TEST_BENCH_FILE image_sender_tb.sv -section_id image_sender_tb
+set_global_assignment -name SYSTEMVERILOG_FILE small_image_pixel_index_generator.sv
 set_global_assignment -name MIF_FILE "chad-ho-320x240.mif"
 set_global_assignment -name SYSTEMVERILOG_FILE pixel_index_generator.sv
 set_global_assignment -name SYSTEMVERILOG_FILE image_sender.sv

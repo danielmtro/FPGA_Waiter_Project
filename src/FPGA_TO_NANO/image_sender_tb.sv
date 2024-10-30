@@ -13,10 +13,10 @@ module image_sender_tb;
 	 logic [16:0] address;
 	 
 	 // create an image to test with
-    logic [11:0] image [3];
+    logic [11:0] image [76800];
 	 initial begin
-		for (int i=0; i < 3; i=i+1) begin
-			image[i] = (i > 1 && i < 3) ? 12'b1111_0000_0000 : 12'b0000_0000_1111;
+		for (int i=0; i < 76800; i=i+1) begin
+			image[i] = i%4096;
 		end
 	 end
 
@@ -26,7 +26,7 @@ module image_sender_tb;
     // Instantiate the DUT (Device Under Test)
     logic image_ready;
 	
-    image_sender #(.NUM_PIXELS(3)) is0 (
+    image_sender #(.NUM_PIXELS(100)) is0 (
         .clk(clk),
         .rst(rst),
         .pixel(pixel),
