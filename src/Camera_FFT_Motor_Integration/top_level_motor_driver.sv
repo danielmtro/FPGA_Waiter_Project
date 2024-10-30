@@ -283,6 +283,18 @@ module top_level_motor_driver (
   
   localparam TABLE_STATE = 4'b0100;
   localparam ONE_SECOND_DELAY = 50_000_000;
+  
+  logic [11:0] blur_image;
+
+  blurring_filter blur_face (
+	.clk(clk_25_vga),
+	.ready(vga_ready),
+	.valid(valid),
+	.startofpacket_in(sop),
+	.endofpacket_in(eop),
+	.data_in(rddata),
+	.data_out(blur_image)
+  );
 
   image_send_select #(
 	.WAIT_TIME(ONE_SECOND_DELAY),
@@ -291,7 +303,7 @@ module top_level_motor_driver (
   ) iamge_send (
 	.clk(CLOCK_50),
 	.norm_in(rddata),
-	.blur_in(12'b0000_1111_0000),
+	.blur_in(blur_image),
 	.state(4'b0100),
 	.image_ready(image_ready),
 	.reset_signal(LEDR[17]),
