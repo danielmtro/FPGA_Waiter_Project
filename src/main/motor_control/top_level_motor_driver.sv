@@ -24,18 +24,7 @@ module top_level_motor_driver (
 	input		 AUD_ADCDAT,
 	input    	 AUD_BCLK,
 	output   	 AUD_XCK,
-	input    	 AUD_ADCLRCK,
-	
-	// vga  outputs
-	output wire VGA_HS,
-	output wire VGA_VS,
-	output wire [7:0] VGA_R,
-	output wire [7:0] VGA_G,
-	output wire [7:0] VGA_B,
-	output wire VGA_BLANK_N,
-	output wire VGA_SYNC_N,
-	output wire VGA_CLK
-
+	input    	 AUD_ADCLRCK
 );
 	// Camera Inputs and Outputs
 	wire ov7670_pclk; assign ov7670_pclk  = GPIO[21];
@@ -75,6 +64,49 @@ module top_level_motor_driver (
 				);
 		end : edge_time
 	endgenerate  
+
+	/*
+	--------------------------------
+	--------------------------------
+	--------------------------------
+	
+	THE SECITON BELOW IS FOR THE CAMERA,
+	BUFFER, ADDRESS GENERATOR AND VGA 
+	INTERFACING 
+	
+	--------------------------------
+	--------------------------------
+	--------------------------------
+	*/
+	
+	
+	logic vga_ready, sop, eop;
+	logic [16:0] rdaddress;
+	logic [11:0] rddata;
+	wire clk_25_vga;
+	
+	camera_generation_top cgt0 (
+	
+	// Camera Inputs and Outputs
+	.ov7670_pclk(ov7670_pclk),
+	.ov7670_xclk(ov7670_xclk),
+	.ov7670_vsync(ov7670_vsync),
+	.ov7670_href(ov7670_href),
+	.ov7670_data(ov7670_data),
+	.ov7670_sioc(ov7670_sioc),
+	.ov7670_siod(ov7670_siod),
+	.ov7670_pwdn(ov7670_pwdn),
+	.ov7670_reset(ov7670_reset),
+	
+	.clk_50(CLOCK_50),
+	.SW(SW),	// switches taken as inputs	
+	.ready(1), // ready comes from vga or its high - create selection
+	.sop(sop),
+	.eop(eop),
+	.pixel(rddata),
+	.address(rdaddress),
+	.clk_25_vga(clk_25_vga)
+);
 
 	// 
 	//
@@ -154,7 +186,8 @@ module top_level_motor_driver (
 	
 	*/
 	
-	assign LEDG = direction;
+	assign LEDG[3:0] = direction;
+	assign LEDG[7] = image_ready;
 	
 	
 	// THRESHOLD FREQUENCY ON SW[8:4]
@@ -208,48 +241,7 @@ module top_level_motor_driver (
 	assign GPIO[5] = uart_out;
 	
 	
-	/*
-	--------------------------------
-	--------------------------------
-	--------------------------------
 	
-	THE SECITON BELOW IS FOR THE CAMERA,
-	BUFFER, ADDRESS GENERATOR AND VGA 
-	INTERFACING 
-	
-	--------------------------------
-	--------------------------------
-	--------------------------------
-	*/
-	
-	
-	logic vga_ready, sop, eop;
-	logic [16:0] rdaddress;
-	logic [11:0] rddata;
-	wire clk_25_vga;
-	
-	camera_generation_top cgt0 (
-	
-	// Camera Inputs and Outputs
-	.ov7670_pclk(ov7670_pclk),
-	.ov7670_xclk(ov7670_xclk),
-	.ov7670_vsync(ov7670_vsync),
-	.ov7670_href(ov7670_href),
-	.ov7670_data(ov7670_data),
-	.ov7670_sioc(ov7670_sioc),
-	.ov7670_siod(ov7670_siod),
-	.ov7670_pwdn(ov7670_pwdn),
-	.ov7670_reset(ov7670_reset),
-	
-	.clk_50(CLOCK_50),
-	.SW(SW),	// switches taken as inputs	
-	.ready(vga_ready), // ready comes from vga or its high - create selection
-	.sop(sop),
-	.eop(eop),
-	.pixel(rddata),
-	.address(rdaddress),
-	.clk_25_vga(clk_25_vga)
-);
 	 
 
   logic [11:0] colour_data;
