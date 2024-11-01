@@ -1,5 +1,5 @@
 * kernel multiplication is done using bit shifting directly
-* in the code, red, green and blue is done separateky
+* in the code, red, green and blue is done separately
 
 BLURRED_PIXEL = (5x7 image) x (kernel_blur)
 HORIZONTAL_EDGE = (5x5 image) x (kernel_TtoB) -> Greyscaled
@@ -14,7 +14,7 @@ if row_count == 0 and col_count == 0 do
 
 compute BLURRED_PIXEL
 compute HORIZONTAL_EDGE
-comput VERTICAL_EDGE
+compute VERTICAL_EDGE
 
 if ready and valid do
     left bit shift dynamic edge logger
@@ -33,13 +33,13 @@ if ready and valid do
             if a head is detected and the face is not ending
                 set blur start to be farther left from the temporary values
 
-            reset tempoary blur start and end values
+            reset temporary blur start and end values
 
         if a head is not detected do
             if dynamic edge logger is within set boundary for finding the start of a face and the current pixel is not an edge and pixel is in the middle 100 pixels do
                 raise head detected flag
                 set blur pixels = 0
-                set tempoary start and end blur pixels as current pixel column
+                set temporary start and end blur pixels as current pixel column
 
             set data out <= current pixel
 
