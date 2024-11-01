@@ -138,6 +138,26 @@ module top_level (
 	.output_data(temp_pixel));
 
 
+  logic [11:0] blur_image;
+  logic decision;
+  assign decision = SW[5];
+  logic [11:0] display_data;
+  
+  assign display_data = (decision) ? rddata : blur_image;
+  
+
+  logic valid;
+  assign valid = 1'b1;
+
+  blurring_filter blur_face (
+	.clk(clk_25_vga),
+	.ready(vga_ready),
+	.valid(valid),
+	.startofpacket_in(sop),
+	.endofpacket_in(eop),
+	.data_in(rddata),
+	.data_out(blur_image)
+  );
 
   // in case we want to interface with the vga
   vga_interface vgai0 (
@@ -388,11 +408,11 @@ module top_level (
 
 
 	// choose what data we are using
-	logic decision;
-	assign decision = SW[2];
-	logic [11:0] display_data;
-	
-	assign display_data = (decision) ? blue_out : rddata;
+//	logic decision;
+//	assign decision = SW[2];
+//	logic [11:0] display_data;
+//	
+//	assign display_data = (decision) ? blue_out : rddata;
 	
 	
 

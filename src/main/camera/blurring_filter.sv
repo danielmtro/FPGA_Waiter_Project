@@ -309,7 +309,7 @@ module blurring_filter (
 
 				 // If the top of the head is detected at the middle of the image, raise a flag (must be past row 5 for valid convolution)
 				 if (!head_detected) begin
-					  if (((TtoB_grey_result > 0) || (LtoR_grey_result > 0)) && ((col_count >= blur_start - 50) && (col_count <= blur_start + 50)) && (row_count > 5)) begin
+					  if (((TtoB_grey_result > 0) || (LtoR_grey_result > 0)) && ((col_count >= blur_start - 30) && (col_count <= blur_start + 30)) && (row_count > 5)) begin
 							head_detected <= 1;
 							blur_pixels = 1;
 							temp_blur_start <= col_count;
