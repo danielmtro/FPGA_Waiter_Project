@@ -1,0 +1,107 @@
+* kernel multiplication is done using bit shifting directly
+* in the code, red, green and blue is done separateky
+
+BLURRED_PIXEL = (5x7 image) x (kernel_blur)
+HORIZONTAL_EDGE = (5x5 image) x (kernel_TtoB) -> Greyscaled
+VERTICAL_EDGE = (5x5 image) x (kernel_LtoR) -> Greyscaled
+
+Current pixel incorporates and accounts for the kernel delay
+_____________________________________________________________
+
+reset convolution and edge results
+if row_count == 0 and col_count == 0 do
+    reset dynamic edge logger, blur positions and blurring flags
+
+compute BLURRED_PIXEL
+compute HORIZONTAL_EDGE
+comput VERTICAL_EDGE
+
+if ready and valid do
+    left bit shift dynamic edge logger
+
+    if HORIZONTAL_EDGE > 0 or VERTICAL_EDGE > 0 do
+        increment dynamic edge logger by 1
+
+    if buffer_counter < 1286 do
+        Set data out <= 0
+
+    else do
+        if column is last pixel in row do
+            if temporary blur start and end is not 0 do
+                set blur start and end pixels as temporary values
+
+            if a head is detected and the face is not ending
+                set blur start to be farther left from the temporary values
+
+            reset tempoary blur start and end values
+
+        if a head is not detected do
+            if dynamic edge logger is within set boundary for finding the start of a face and the current pixel is not an edge and pixel is in the middle 100 pixels do
+                raise head detected flag
+                set blur pixels = 0
+                set tempoary start and end blur pixels as current pixel column
+
+            set data out <= current pixel
+
+        else do
+            if finish blur flag is raised do
+                set data out <= current pixel
+
+            else do
+                if column count is not within the dynamic blurring start and end boundary
+                    set data out <= current pixel
+                    set blur pixels = 0
+                
+                else do
+                    if dynamic edge logger is within set boundary for finding the end of a face and the current pixel is not an edge do
+                        if blur pixels flag is raised do
+                            set temporary blur end as column count
+
+                            if the temporary blur start is more than the blur start + 5 do
+                                raise face ending flag
+
+                    if the face ending flag is not raised do
+                        if the column count is 10 pixels past the blur start and the temporary blur start is still 0 do
+                            if the column count is even do
+                                set the temporary blur start <= blur start - 1
+                                set blur pixels = 1
+
+                            else do
+                                set the temporary blur start <= blur start
+                                set blur pixels = 1
+
+                        if the column count is 10 pixels past the blur end and the temporary blur end is still 0 do
+                            if the column count is even do
+                                set the temporary blur end <= blur end + 1
+                                set blur pixels = 0
+
+                            else do
+                                set the temporary blur end <= blur end
+                                set blur pixels = 0
+
+                    else do
+                        if the temporary blur start is less than the blur start do
+                            if the column count is even do
+                                set the temporary blur start <= blur start + 1
+
+                            else do
+                                set the temporary blur start <= blur start
+
+                        if the temporary blur end is more than the blur end or is less than blur end - 10 do
+                            if the column count is even do
+                                set the temporary blur end <= blur end - 1
+
+                            else do
+                                set the temporary blur end <= blur end
+
+                        if blur end - blur start is less than or equal to 5 pixels
+                            raise finish blur flag
+
+        if blur pixels flag is raised do
+            if background light noise is detected in blur do
+                set BLURREED PIXEL = BLURRED_PIXEL + current pixel with one left bit shift
+
+            set data out <= BLURRED_PIXEL
+
+        else do
+            set data out <= current pixel

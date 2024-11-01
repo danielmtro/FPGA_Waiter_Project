@@ -305,16 +305,16 @@ module blurring_filter (
                             + (LtoR_edge_result_b << 4); // Multiply by 16
 
         if (ready && valid) begin
-            // Wait for all data to pass through convolution
-            if (buffer_counter < 1286) begin
-                data_out <= 0;
-            end
-
             // Update dynamic edge logger
             dynamic_edge_logger = dynamic_edge_logger << 1;
 
             if ((TtoB_grey_result > 0) || (LtoR_grey_result > 0)) begin
                 dynamic_edge_logger = dynamic_edge_logger + 1;
+            end
+            
+            // Wait for all data to pass through convolution
+            if (buffer_counter < 1286) begin
+                data_out <= 0;
             end
 
             else begin
@@ -337,7 +337,7 @@ module blurring_filter (
                 if (!head_detected) begin
                     // Not all edges are signs of a head, check that the edge is not noise, a horizontal or a
                     // vertical wall edge and that the head is reasonably central in the image (50% of the camera frame)
-                    // For finding the start of the face, the toelrance is required to be reasonably strict in the dynamic edge logger
+                    // For finding the start of the face, the tolerance is required to be reasonably strict in the dynamic edge logger
                     if (((dynamic_edge_logger % 2 == 0) && (dynamic_edge_logger < 25) && (dynamic_edge_logger > 10)) && ((col_count >= blur_start - 50) && (col_count <= blur_start + 50))) begin
                         head_detected <= 1;
                         blur_pixels = 1;
@@ -367,7 +367,7 @@ module blurring_filter (
                         // Blur face and check for edges on face
                         else begin
                             // Check that pixel is edge
-                            // For finding the end of the face, the toelrance can be more flexible in the dynamic edge logger
+                            // For finding the end of the face, the tolerance can be more flexible in the dynamic edge logger
                             if ((dynamic_edge_logger % 2 == 0) && (dynamic_edge_logger < 30) && (dynamic_edge_logger > 5)) begin
                                 // Continuously check for the last edge in the image
                                 if (blur_pixels) begin
@@ -375,7 +375,7 @@ module blurring_filter (
 
                                     // If the face start pixel begins to move to the right
                                     if (temp_blur_start > (blur_start + 5)) begin
-                                            face_ending <= 1;
+                                        face_ending <= 1;
                                     end
                                 end
 
@@ -413,7 +413,7 @@ module blurring_filter (
                             end
 
                             // If the face is ending, where face edge not detected properly, slowly narrow down until face is finished
-                            if (face_ending) begin
+                            else begin
                                 if (temp_blur_start < blur_start) begin
                                     if (col_count % 2 == 0) begin
                                             temp_blur_start <= blur_start + 1;
@@ -445,8 +445,8 @@ module blurring_filter (
                     // Remove noise from background in blur
                     if ((conv_result_r[9:6] > 10) && (conv_result_g[9:6] > 10) && (conv_result_b[9:6] > 10)) begin
                         conv_result_r[9:6] = (conv_result_r[9:6]+red_buffer[0]) >> 1;
-                        conv_result_g[9:6] = (conv_result_g[9:6]+red_buffer[0]) >> 1;
-                        conv_result_b[9:6] = (conv_result_b[9:6]+red_buffer[0]) >> 1;
+                        conv_result_g[9:6] = (conv_result_g[9:6]+green_buffer[0]) >> 1;
+                        conv_result_b[9:6] = (conv_result_b[9:6]+blue_buffer[0]) >> 1;
                     end
                     // Combine the normalized results for each color component
                     data_out <= {conv_result_r[9:6], conv_result_g[9:6], conv_result_b[9:6]};
