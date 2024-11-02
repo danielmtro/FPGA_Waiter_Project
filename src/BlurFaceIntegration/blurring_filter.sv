@@ -359,9 +359,9 @@ module blurring_filter (
                     else begin
                         // Check if pixel is not within dynamic blurring boundary
                         if ((col_count < blur_start - 5) || (col_count > (blur_end + 5))) begin
-                                // For no blur, pass through the data
-                                data_out <= {red_buffer[0], green_buffer[0], blue_buffer[0]};
-                                blur_pixels = 0;
+                            // For no blur, pass through the data
+                            data_out <= {red_buffer[0], green_buffer[0], blue_buffer[0]};
+                            blur_pixels = 0;
                         end
 
                         // Blur face and check for edges on face
@@ -391,23 +391,23 @@ module blurring_filter (
                             if (!face_ending) begin
                                 if ((col_count > (blur_start + 10)) && (temp_blur_start == 0)) begin
                                     if (col_count % 2 == 0) begin
-                                            temp_blur_start <= blur_start - 1;
-                                            blur_pixels = 1;
+                                        temp_blur_start <= blur_start - 1;
+                                        blur_pixels = 1;
                                     end
                                     else begin
-                                            temp_blur_start <= blur_start;
-                                            blur_pixels = 1;
+                                        temp_blur_start <= blur_start;
+                                        blur_pixels = 1;
                                     end
                                 end
 
                                 if ((col_count > (blur_end + 10)) && (temp_blur_end == 0)) begin
                                     if (col_count % 2 == 0) begin
-                                            temp_blur_end <= blur_end + 1;
-                                            blur_pixels = 0;
+                                        temp_blur_end <= blur_end + 1;
+                                        blur_pixels = 0;
                                     end
                                     else begin
-                                            temp_blur_end <= blur_end;
-                                            blur_pixels = 0;
+                                        temp_blur_end <= blur_end;
+                                        blur_pixels = 0;
                                     end
                                 end
                             end
@@ -416,19 +416,19 @@ module blurring_filter (
                             else begin
                                 if (temp_blur_start < blur_start) begin
                                     if (col_count % 2 == 0) begin
-                                            temp_blur_start <= blur_start + 1;
+                                        temp_blur_start <= blur_start + 1;
                                     end
                                     else begin
-                                            temp_blur_start <= blur_start;
+                                        temp_blur_start <= blur_start;
                                     end
                                 end
 
                                 if ((temp_blur_end > blur_end) || (temp_blur_end < blur_end - 10)) begin
                                     if (col_count % 2 == 0) begin
-                                            temp_blur_end <= blur_end - 1;
+                                        temp_blur_end <= blur_end - 1;
                                     end
                                     else begin
-                                            temp_blur_end <= blur_end;
+                                        temp_blur_end <= blur_end;
                                     end
                                 end
 
