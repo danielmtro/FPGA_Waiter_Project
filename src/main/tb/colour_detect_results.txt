@@ -1,0 +1,10 @@
+# Testing RED (easy) detection:
+# Expected RED data_out = 1111_0000_0000, got 111100000000
+# Testing Red (medium) detection:
+# Expected RED data_out = 0000_1111_0000, got 111100000000
+# Testing RED (HARD) detection:
+# Expected RED data_out = 1111_0000_0000, got 111100000000
+# Testing RED detection:
+# Expected RED data_out = 0000_0000_0000, got 000000000000
+# Pixel count reset before SOP. Expected colour_pixels = 3, got      3
+# Pixel count reset after SOP. Expected colour_pixels = 0, got      3
