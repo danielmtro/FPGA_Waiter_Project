@@ -1,0 +1,170 @@
+/*
+WARNING: Do NOT edit the input and output ports in this file in a text
+editor if you plan to continue editing the block that represents it in
+the Block Editor! File corruption is VERY likely to occur.
+*/
+/*
+Copyright (C) 2020  Intel Corporation. All rights reserved.
+Your use of Intel Corporation's design tools, logic functions 
+and other software and tools, and any partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Intel Program License 
+Subscription Agreement, the Intel Quartus Prime License Agreement,
+the Intel FPGA IP License Agreement, or other applicable license
+agreement, including, without limitation, that your use is for
+the sole purpose of programming logic devices manufactured by
+Intel and sold by Intel or its authorized distributors.  Please
+refer to the applicable agreement for further details, at
+https://fpgasoftware.intel.com/eula.
+*/
+(header "symbol" (version "1.1"))
+(symbol
+	(rect 0 0 624 400)
+	(text "vga_interface" (rect 273 -1 328 11)(font "Arial" (font_size 10)))
+	(text "inst" (rect 8 384 20 396)(font "Arial" ))
+	(port
+		(pt 0 72)
+		(input)
+		(text "clk_clk" (rect 0 0 27 12)(font "Arial" (font_size 8)))
+		(text "clk_clk" (rect 4 61 46 72)(font "Arial" (font_size 8)))
+		(line (pt 0 72)(pt 272 72)(line_width 1))
+	)
+	(port
+		(pt 0 112)
+		(input)
+		(text "reset_reset_n" (rect 0 0 56 12)(font "Arial" (font_size 8)))
+		(text "reset_reset_n" (rect 4 101 82 112)(font "Arial" (font_size 8)))
+		(line (pt 0 112)(pt 272 112)(line_width 1))
+	)
+	(port
+		(pt 0 152)
+		(input)
+		(text "video_scaler_0_avalon_scaler_sink_startofpacket" (rect 0 0 201 12)(font "Arial" (font_size 8)))
+		(text "video_scaler_0_avalon_scaler_sink_startofpacket" (rect 4 141 286 152)(font "Arial" (font_size 8)))
+		(line (pt 0 152)(pt 272 152)(line_width 1))
+	)
+	(port
+		(pt 0 168)
+		(input)
+		(text "video_scaler_0_avalon_scaler_sink_endofpacket" (rect 0 0 198 12)(font "Arial" (font_size 8)))
+		(text "video_scaler_0_avalon_scaler_sink_endofpacket" (rect 4 157 274 168)(font "Arial" (font_size 8)))
+		(line (pt 0 168)(pt 272 168)(line_width 1))
+	)
+	(port
+		(pt 0 184)
+		(input)
+		(text "video_scaler_0_avalon_scaler_sink_valid" (rect 0 0 167 12)(font "Arial" (font_size 8)))
+		(text "video_scaler_0_avalon_scaler_sink_valid" (rect 4 173 238 184)(font "Arial" (font_size 8)))
+		(line (pt 0 184)(pt 272 184)(line_width 1))
+	)
+	(port
+		(pt 0 216)
+		(input)
+		(text "video_scaler_0_avalon_scaler_sink_data[11..0]" (rect 0 0 188 12)(font "Arial" (font_size 8)))
+		(text "video_scaler_0_avalon_scaler_sink_data[11..0]" (rect 4 205 274 216)(font "Arial" (font_size 8)))
+		(line (pt 0 216)(pt 272 216)(line_width 3))
+	)
+	(port
+		(pt 0 200)
+		(output)
+		(text "video_scaler_0_avalon_scaler_sink_ready" (rect 0 0 173 12)(font "Arial" (font_size 8)))
+		(text "video_scaler_0_avalon_scaler_sink_ready" (rect 4 189 238 200)(font "Arial" (font_size 8)))
+		(line (pt 0 200)(pt 272 200)(line_width 1))
+	)
+	(port
+		(pt 0 256)
+		(output)
+		(text "video_vga_controller_0_external_interface_CLK" (rect 0 0 197 12)(font "Arial" (font_size 8)))
+		(text "video_vga_controller_0_external_interface_CLK" (rect 4 245 274 256)(font "Arial" (font_size 8)))
+		(line (pt 0 256)(pt 272 256)(line_width 1))
+	)
+	(port
+		(pt 0 272)
+		(output)
+		(text "video_vga_controller_0_external_interface_HS" (rect 0 0 189 12)(font "Arial" (font_size 8)))
+		(text "video_vga_controller_0_external_interface_HS" (rect 4 261 268 272)(font "Arial" (font_size 8)))
+		(line (pt 0 272)(pt 272 272)(line_width 1))
+	)
+	(port
+		(pt 0 288)
+		(output)
+		(text "video_vga_controller_0_external_interface_VS" (rect 0 0 191 12)(font "Arial" (font_size 8)))
+		(text "video_vga_controller_0_external_interface_VS" (rect 4 277 268 288)(font "Arial" (font_size 8)))
+		(line (pt 0 288)(pt 272 288)(line_width 1))
+	)
+	(port
+		(pt 0 304)
+		(output)
+		(text "video_vga_controller_0_external_interface_BLANK" (rect 0 0 211 12)(font "Arial" (font_size 8)))
+		(text "video_vga_controller_0_external_interface_BLANK" (rect 4 293 286 304)(font "Arial" (font_size 8)))
+		(line (pt 0 304)(pt 272 304)(line_width 1))
+	)
+	(port
+		(pt 0 320)
+		(output)
+		(text "video_vga_controller_0_external_interface_SYNC" (rect 0 0 204 12)(font "Arial" (font_size 8)))
+		(text "video_vga_controller_0_external_interface_SYNC" (rect 4 309 280 320)(font "Arial" (font_size 8)))
+		(line (pt 0 320)(pt 272 320)(line_width 1))
+	)
+	(port
+		(pt 0 336)
+		(output)
+		(text "video_vga_controller_0_external_interface_R[7..0]" (rect 0 0 205 12)(font "Arial" (font_size 8)))
+		(text "video_vga_controller_0_external_interface_R[7..0]" (rect 4 325 298 336)(font "Arial" (font_size 8)))
+		(line (pt 0 336)(pt 272 336)(line_width 3))
+	)
+	(port
+		(pt 0 352)
+		(output)
+		(text "video_vga_controller_0_external_interface_G[7..0]" (rect 0 0 204 12)(font "Arial" (font_size 8)))
+		(text "video_vga_controller_0_external_interface_G[7..0]" (rect 4 341 298 352)(font "Arial" (font_size 8)))
+		(line (pt 0 352)(pt 272 352)(line_width 3))
+	)
+	(port
+		(pt 0 368)
+		(output)
+		(text "video_vga_controller_0_external_interface_B[7..0]" (rect 0 0 202 12)(font "Arial" (font_size 8)))
+		(text "video_vga_controller_0_external_interface_B[7..0]" (rect 4 357 298 368)(font "Arial" (font_size 8)))
+		(line (pt 0 368)(pt 272 368)(line_width 3))
+	)
+	(drawing
+		(text "clk" (rect 257 43 532 99)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "clk" (rect 277 67 572 144)(font "Arial" (color 0 0 0)))
+		(text "reset" (rect 243 83 516 179)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "reset_n" (rect 277 107 596 224)(font "Arial" (color 0 0 0)))
+		(text "video_scaler_0_avalon_scaler_sink" (rect 65 123 328 259)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "startofpacket" (rect 277 147 632 304)(font "Arial" (color 0 0 0)))
+		(text "endofpacket" (rect 277 163 620 336)(font "Arial" (color 0 0 0)))
+		(text "valid" (rect 277 179 584 368)(font "Arial" (color 0 0 0)))
+		(text "ready" (rect 277 195 584 400)(font "Arial" (color 0 0 0)))
+		(text "data" (rect 277 211 578 432)(font "Arial" (color 0 0 0)))
+		(text "video_vga_controller_0_external_interface" (rect 25 227 296 467)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "CLK" (rect 277 251 572 512)(font "Arial" (color 0 0 0)))
+		(text "HS" (rect 277 267 566 544)(font "Arial" (color 0 0 0)))
+		(text "VS" (rect 277 283 566 576)(font "Arial" (color 0 0 0)))
+		(text "BLANK" (rect 277 299 584 608)(font "Arial" (color 0 0 0)))
+		(text "SYNC" (rect 277 315 578 640)(font "Arial" (color 0 0 0)))
+		(text "R" (rect 277 331 560 672)(font "Arial" (color 0 0 0)))
+		(text "G" (rect 277 347 560 704)(font "Arial" (color 0 0 0)))
+		(text "B" (rect 277 363 560 736)(font "Arial" (color 0 0 0)))
+		(text " vga_interface " (rect 561 384 1212 778)(font "Arial" ))
+		(line (pt 272 32)(pt 352 32)(line_width 1))
+		(line (pt 352 32)(pt 352 384)(line_width 1))
+		(line (pt 272 384)(pt 352 384)(line_width 1))
+		(line (pt 272 32)(pt 272 384)(line_width 1))
+		(line (pt 273 52)(pt 273 76)(line_width 1))
+		(line (pt 274 52)(pt 274 76)(line_width 1))
+		(line (pt 273 92)(pt 273 116)(line_width 1))
+		(line (pt 274 92)(pt 274 116)(line_width 1))
+		(line (pt 273 132)(pt 273 220)(line_width 1))
+		(line (pt 274 132)(pt 274 220)(line_width 1))
+		(line (pt 273 236)(pt 273 372)(line_width 1))
+		(line (pt 274 236)(pt 274 372)(line_width 1))
+		(line (pt 0 0)(pt 624 0)(line_width 1))
+		(line (pt 624 0)(pt 624 400)(line_width 1))
+		(line (pt 0 400)(pt 624 400)(line_width 1))
+		(line (pt 0 0)(pt 0 400)(line_width 1))
+	)
+)
