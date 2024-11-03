@@ -263,16 +263,16 @@ module top_level (
 	
 	/*
 	For reference: direction is an enum:
-		IDLE_BASE, 	0	0000
-      FORWARDS,	1	0001
+		IDLE_BASE, 		0	0000
+		FORWARDS,	    1	0001
 		TURN,			2	0010
-		TO_TABLE,	3	0011
-      IDLE_TABLE,	4	0100
-      BACKWARDS,	5	0101
-		TURN_BACK,	6	0110
-		RETURN_HOME,7	0111
-      STOP			8	1000
-	
+		TO_TABLE,		3	0011
+		TO_FACE,    	4   0100
+		IDLE_TABLE,		5	0101
+		BACKWARDS,		6	0110
+		TURN_BACK,		7	0111
+		RETURN_HOME,	8	1000
+		STOP			9	1001
 	*/
 	
 	assign LEDG[3:0] = direction;
