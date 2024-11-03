@@ -45,7 +45,7 @@ module blurring_filter (
 
     // Define the bitshift kernel_blur
     logic [3:0] kernel_blur [0:34];
-    
+
     // Define the edge kernels
     logic [5:0] kernel_TtoB [0:24];
     logic [5:0] kernel_LtoR [0:24];
@@ -198,8 +198,8 @@ module blurring_filter (
                 blue_buffer[i] <= 0;
             end
         end
-		  
-		  if (ready && valid) begin
+
+        if (ready && valid) begin
             // Shift the buffers left for red, green, and blue
             for (int i = 0; i < (image_width*4 + 6); i++) begin
                 red_buffer[i] <= red_buffer[i+1];
@@ -299,7 +299,7 @@ module blurring_filter (
         TtoB_grey_result = (TtoB_edge_result_r << 5) // Multiply by 32
                             + (TtoB_edge_result_g << 6) // Multiply by 64
                             + (TtoB_edge_result_b << 4); // Multiply by 16
-        
+
         LtoR_grey_result = (LtoR_edge_result_r << 5) // Multiply by 32
                             + (LtoR_edge_result_g << 6) // Multiply by 64
                             + (LtoR_edge_result_b << 4); // Multiply by 16
@@ -451,7 +451,7 @@ module blurring_filter (
                     // Combine the normalized results for each color component
                     data_out <= {conv_result_r[9:6], conv_result_g[9:6], conv_result_b[9:6]};
                 end
-                
+
                 // Output the input pixel
                 else begin
                     // For no blur, pass through the data
