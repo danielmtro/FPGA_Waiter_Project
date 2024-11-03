@@ -11,15 +11,3 @@ ALL MODULES ARE DONE - WOOO
 Team 1: Get the state machine working based on the colour thresholding, frequency input.
 
 Team 2: Get the image sending once the robot gets to the table.
-
-## GUI Required Libraries
-
-- PyQt5
-- sys
-- serial
-- random
-
-## DeepFace Module
-
-- Requires deepface library, uses tensorflow
-- First run of code downloads model weightings, takes a while.

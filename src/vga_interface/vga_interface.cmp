@@ -1,0 +1,20 @@
+	component vga_interface is
+		port (
+			clk_clk                                         : in  std_logic                     := 'X';             -- clk
+			reset_reset_n                                   : in  std_logic                     := 'X';             -- reset_n
+			video_scaler_0_avalon_scaler_sink_startofpacket : in  std_logic                     := 'X';             -- startofpacket
+			video_scaler_0_avalon_scaler_sink_endofpacket   : in  std_logic                     := 'X';             -- endofpacket
+			video_scaler_0_avalon_scaler_sink_valid         : in  std_logic                     := 'X';             -- valid
+			video_scaler_0_avalon_scaler_sink_ready         : out std_logic;                                        -- ready
+			video_scaler_0_avalon_scaler_sink_data          : in  std_logic_vector(11 downto 0) := (others => 'X'); -- data
+			video_vga_controller_0_external_interface_CLK   : out std_logic;                                        -- CLK
+			video_vga_controller_0_external_interface_HS    : out std_logic;                                        -- HS
+			video_vga_controller_0_external_interface_VS    : out std_logic;                                        -- VS
+			video_vga_controller_0_external_interface_BLANK : out std_logic;                                        -- BLANK
+			video_vga_controller_0_external_interface_SYNC  : out std_logic;                                        -- SYNC
+			video_vga_controller_0_external_interface_R     : out std_logic_vector(7 downto 0);                     -- R
+			video_vga_controller_0_external_interface_G     : out std_logic_vector(7 downto 0);                     -- G
+			video_vga_controller_0_external_interface_B     : out std_logic_vector(7 downto 0)                      -- B
+		);
+	end component vga_interface;
+
