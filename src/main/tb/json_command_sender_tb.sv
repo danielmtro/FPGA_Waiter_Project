@@ -8,17 +8,19 @@ module json_command_sender_tb;
     // Clock and reset signals
     logic clk;
     logic rst;
+    logic [2:0] speed;
     logic uart_out;
     logic ready;
 
     // Instantiate the DUT (Device Under Test)
-    json_command_sender #(
+    forward #(
     .CLKS_PER_BIT(CLKS_PER_BIT),
     .BITS_N(BITS_N),
     .NUM_BYTES(25)
-    ) uut (
+    ) json_command (
         .clk(clk),
         .rst(rst),
+        .speed(speed),
         .uart_out(uart_out),
         .ready(ready)
     );
@@ -34,28 +36,22 @@ module json_command_sender_tb;
         rst = 1;
         #50;
         rst = 0;
-		  
+		
+        // Set Speed
+        speed = 3'b001;
+
         // End of simulation
         wait(ready) begin
-				#1000;
-				rst = 1;
-				#50;
-				rst = 0;
-        end
-		  
-		  wait (ready) begin
-				#50;
+			#50;
 				$display("Transmission complete.");
             $finish;
-		  end
+        end
     end
 	 
-	 
-
     // Monitor the UART output
     always @(posedge clk) begin
         if (!rst) begin
-            $display("Sending byte: %h at time %t", uut.current_byte, $time);
+            $display("Sending byte: %h at time %t", json_command.current_byte, $time);
         end
     end
 

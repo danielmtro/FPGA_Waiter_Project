@@ -102,6 +102,6 @@ module forward #(
     end
 
     // Ready signal when all bytes have been sent, including the newline
-    assign ready = (byte_index == NUM_BYTES) && uart_ready && (!uart_valid);  // Only ready after the last byte is fully sent
+    assign ready = (byte_index == NUM_BYTES-1) && uart_ready && (!uart_valid);  // Only ready after the last byte is fully sent
 
 endmodule
